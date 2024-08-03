@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Energy Consumption Metrics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">API Energy Consumption Metrics</h1>
+
+    <form action="/measure" method="POST" class="mb-4">
+        <div class="flex items-center">
+            <input type="text" name="apiEndpoint" placeholder="Enter API Endpoint"
+                   class="p-2 border border-gray-300 rounded-md w-full" required>
+            <button type="submit" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md">Measure</button>
+        </div>
+    </form>
+
+    <table class="min-w-full bg-white shadow-md rounded-lg">
+        <thead>
+            <tr>
+                <th class="px-4 py-2 border">API Endpoint</th>
+                <th class="px-4 py-2 border">Request Size (bytes)</th>
+                <th class="px-4 py-2 border">Response Size (bytes)</th>
+                <th class="px-4 py-2 border">Response Time (ms)</th>
+                <th class="px-4 py-2 border">Timestamp</th>
+                <th class="px-4 py-2 border">Energy Consumption (Joules)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Metrics}}
+            <tr>
+                <td class="px-4 py-2 border">{{.APIEndpoint}}</td>
+                <td class="px-4 py-2 border">{{.RequestSize}}</td>
+                <td class="px-4 py-2 border">{{.ResponseSize}}</td>
+                <td class="px-4 py-2 border">{{.ResponseTime.Milliseconds}}</td>
+                <td class="px-4 py-2 border">{{.Timestamp}}</td>
+                <td class="px-4 py-2 border">{{.EnergyConsumption}}</td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="6" class="px-4 py-2 border text-center">No metrics available</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
