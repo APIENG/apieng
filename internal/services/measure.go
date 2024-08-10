@@ -1,26 +1,28 @@
-package main
+package services
 
 import (
 	"fmt"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/Taiwrash/apieng/internal/models"
 )
 
 // MeasureAPI collects metrics for a given API endpoint and estimates energy consumption.
-func MeasureAPI(endpoint string) Metrics {
+func MeasureAPI(endpoint string) models.Metrics {
 	start := time.Now()
 	resp, err := http.Get(endpoint)
 	if err != nil {
 		fmt.Println("Error making request:", err)
-		return Metrics{}
+		return models.Metrics{}
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
-		return Metrics{}
+		return models.Metrics{}
 	}
 
 	// For demonstration, let's assume a mock CPU usage of 0.5 (50%)
@@ -32,7 +34,7 @@ func MeasureAPI(endpoint string) Metrics {
 	// Estimate energy consumption
 	energy := EnergyEstimate(responseTime, cpuUsage)
 
-	metrics := Metrics{
+	metrics := models.Metrics{
 		APIEndpoint:       endpoint,
 		RequestSize:       len(endpoint), // Request size can include headers, etc.
 		ResponseSize:      len(body),

@@ -1,8 +1,10 @@
-package main
+package db
 
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/Taiwrash/apieng/internal/models"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -34,7 +36,7 @@ func InitializeDB() (*sql.DB, error) {
 }
 
 // StoreMetrics stores the collected metrics in the database.
-func StoreMetrics(db *sql.DB, m Metrics) error {
+func StoreMetrics(db *sql.DB, m models.Metrics) error {
 	if m.APIEndpoint == "" {
 		return fmt.Errorf("API endpoint is empty")
 	}
