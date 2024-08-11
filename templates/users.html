@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Energy Consumption Metrics</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Users using the API</h1>
+
+
+    <table class="min-w-full bg-white shadow-md rounded-lg">
+        <thead>
+            <tr>
+                <th class="px-4 py-2 border">Email</th>
+                <th class="px-4 py-2 border">Password</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Users}}
+            <tr>
+                <td class="px-4 py-2 border">{{.Email}}</td>
+                <td class="px-4 py-2 border">{{.Password}}</td>
+            </tr>
+            {{else}}
+            <tr>
+                <td colspan="6" class="px-4 py-2 border text-center">No Users yet</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

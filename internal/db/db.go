@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/Taiwrash/apieng/internal/models"
+	"github.com/APIENG/apieng/internal/models"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -27,7 +27,19 @@ func InitializeDB() (*sql.DB, error) {
 		energy_consumption REAL
 	);`
 
+	createTableQuery1 := `
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		email TEXT,
+		password TEXT
+	);`
+
 	_, err = db.Exec(createTableQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.Exec(createTableQuery1)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +58,21 @@ func StoreMetrics(db *sql.DB, m models.Metrics) error {
 	VALUES (?, ?, ?, ?, ?, ?);`
 
 	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// StoreUsers stores the collected users in the database.
+func StoreUsers(db *sql.DB, u models.Users) error {
+
+	insertQuery := `
+	INSERT INTO users (email, password)
+	VALUES (?, ?);`
+
+	_, err := db.Exec(insertQuery, u.Email, u.Password)
 	if err != nil {
 		return err
 	}
