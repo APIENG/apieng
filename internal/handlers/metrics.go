@@ -7,9 +7,9 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/Taiwrash/apieng/internal/db"
-	"github.com/Taiwrash/apieng/internal/models"
-	"github.com/Taiwrash/apieng/internal/services"
+	"github.com/APIENG/apieng/internal/db"
+	"github.com/APIENG/apieng/internal/models"
+	"github.com/APIENG/apieng/internal/services"
 )
 
 // MetricsTemplateData represents the data to be passed to the HTML template.
@@ -99,7 +99,7 @@ func MeasureHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect back to the metrics page
-	http.Redirect(w, r, "/api/metrics", http.StatusSeeOther)
+	http.Redirect(w, r, "/metrics", http.StatusSeeOther)
 }
 
 // API handler to return metrics in JSON format

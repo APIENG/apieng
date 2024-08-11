@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Taiwrash/apieng/internal/models"
+	"github.com/APIENG/apieng/internal/models"
 )
 
 // MeasureAPI collects metrics for a given API endpoint and estimates energy consumption.
