@@ -23,7 +23,7 @@ func Authorize(next http.HandlerFunc) http.HandlerFunc {
 func AuthorizeCookie(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_token")
-		if err != nil {
+		if err != nil || cookie.Value == "" {
 			if err == http.ErrNoCookie {
 				http.Redirect(w, r, "/", http.StatusSeeOther)
 				//http.Error(w, "Unauthorized: No session token", http.StatusUnauthorized)

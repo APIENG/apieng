@@ -211,3 +211,17 @@ func APIusersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
 	}
 }
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := http.Cookie{
+		Name:     "session_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+	}
+	http.SetCookie(w, &cookie)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
