@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Energy Consumption Metrics</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #response {
+            display: none;
+            width: 70%;
+            height: 140px;
+        }
+        #copy {
+            display: none;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-900">
 
@@ -47,7 +57,63 @@
             {{end}}
         </tbody>
     </table>
+
+        <div class="flex items-center">
+            <button type="submit" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md" onclick="fetchData()">Generate Key</button>
+        </div>
+        <textarea id="response" class="sty"></textarea>
+        <button type="submit" id="copy" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md" onclick="copyToClipboard()">Copy to clipboard</button>
+    
 </div>
+
+
+ <script> async function fetchData() {
+    try {
+        const apiUrl = 'http://localhost:8080/generate';
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`An error occurred: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Data:', data);
+        const responseElement = document.getElementById('response');
+        responseElement.style.display= 'block';
+        let value = JSON.stringify(data, null, 2);
+        value = value.slice(1);
+        value = value.slice(0, -1);
+        responseElement.innerHTML = value;
+        const ele= document.getElementById('copy');
+        copy.style.display = 'block';
+    } catch (error) {
+        // Handle errors
+        console.error('Error fetching data:', error);
+        const responseElement = document.getElementById('response');
+        responseElement.textContent = 'Failed to fetch data.';
+    }
+}
+function copyToClipboard() {
+    const element = document.getElementById("response");
+    const text = element.textContent || element.innerText;
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+
+    document.body.removeChild(textarea);
+
+    alert('Text copied to clipboard!');
+}
+
+
+</script>
 
 </body>
 </html>

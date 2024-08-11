@@ -5,6 +5,7 @@ import (
 )
 
 type Users struct {
+	Iid	  string
 	Email    string
 	Password string
 }

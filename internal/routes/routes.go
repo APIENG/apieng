@@ -15,12 +15,14 @@ func SetupRouter() *mux.Router {
 	router.HandleFunc("/login", handlers.LoginusersHandler).Methods("POST")
 	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
 	router.HandleFunc("/users", pkg.AuthorizeCookie(handlers.UsersHandler)).Methods("GET")
+	router.HandleFunc("/generate", pkg.AuthorizeCookie(handlers.GenerateKey)).Methods("POST")
 	router.HandleFunc("/logout", pkg.AuthorizeCookie(handlers.LogoutHandler)).Methods("GET")
 	router.HandleFunc("/api/users", handlers.APIusersHandler).Methods("GET")
 
 	//Metrics handler
 	router.HandleFunc("/metrics", pkg.AuthorizeCookie(handlers.MetricsHandler)).Methods("GET")
 	router.HandleFunc("/measure", pkg.AuthorizeCookie(handlers.MeasureHandler)).Methods("POST")
+	router.HandleFunc("/api/measure", handlers.AuthorizeAPI(handlers.MeasureHandler)).Methods("POST")
 	router.HandleFunc("/api/metrics", pkg.Authorize(handlers.APIMetricsHandler)).Methods("GET") // New API endpoint
 
 	return router

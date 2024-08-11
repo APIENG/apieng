@@ -30,6 +30,7 @@ func InitializeDB() (*sql.DB, error) {
 	createTableQuery1 := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		iid TEXT,
 		email TEXT,
 		password TEXT
 	);`
@@ -69,10 +70,10 @@ func StoreMetrics(db *sql.DB, m models.Metrics) error {
 func StoreUsers(db *sql.DB, u models.Users) error {
 
 	insertQuery := `
-	INSERT INTO users (email, password)
-	VALUES (?, ?);`
+	INSERT INTO users (iid, email, password)
+	VALUES (?, ?, ?);`
 
-	_, err := db.Exec(insertQuery, u.Email, u.Password)
+	_, err := db.Exec(insertQuery, u.Iid, u.Email, u.Password)
 	if err != nil {
 		return err
 	}

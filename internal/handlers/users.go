@@ -18,7 +18,7 @@ type UsersTemplateData struct {
 }
 
 func FetchUsers(db *sql.DB) ([]models.Users, error) {
-	rows, err := db.Query(`SELECT email, password FROM users`)
+	rows, err := db.Query(`SELECT iid, email, password FROM users`)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func FetchUsers(db *sql.DB) ([]models.Users, error) {
 	var usersList []models.Users
 	for rows.Next() {
 		var m models.Users
-		err := rows.Scan(&m.Email, &m.Password)
+		err := rows.Scan(&m.Iid, &m.Email, &m.Password)
 		if err != nil {
 			return nil, err
 		}
@@ -103,9 +103,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+	iid := services.GenerateSessionID()
 	user := models.Users{
 		Email:    email,
 		Password: password,
+		Iid:      iid,
 	}
 	if email == "" || password == "" {
 		http.Error(w, "email and password is required", http.StatusBadRequest)
@@ -186,7 +188,15 @@ func LoginusersHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Expires:  time.Now().Add(24 * time.Hour),
 	}
+	cookie1 := http.Cookie{
+		Name:     "user_id",
+		Value:    foundUser.Iid,
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Now().Add(24 * time.Hour),
+	}
 	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &cookie1)
 	http.Redirect(w, r, "/metrics", http.StatusSeeOther)
 }
 
