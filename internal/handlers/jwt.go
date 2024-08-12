@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"crypto/rsa"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -24,6 +25,11 @@ const (
 // verify key and sign key
 var (
 	verifyKey, signKey []byte
+)
+
+var (
+	privateKey *rsa.PrivateKey
+	publicKey  *rsa.PublicKey
 )
 
 type Response struct {
@@ -52,7 +58,7 @@ func FetchEachUser(db *sql.DB, iid string) (models.Users, error) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No user found with the given iid
-			return models.Users{}, fmt.Errorf("no user found with iid %d", iid)
+			return models.Users{}, fmt.Errorf("no user found with iid %s", iid)
 		}
 		// Other errors
 		return models.Users{}, err
@@ -69,28 +75,30 @@ func init() {
 		log.Fatal("Error reading private key")
 		return
 	}
+	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(signKey)
+	if err != nil {
+		log.Fatalf("Error parsing private key: %v", err)
+		return
+	}
 	verifyKey, err = ioutil.ReadFile(pubKeyPath)
 	if err != nil {
 		log.Fatal("Error reading private key")
 		return
 	}
+	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyKey)
+	if err != nil {
+		log.Fatalf("Error parsing public key: %v", err)
+	}
 }
 
-func createToken(userInfo models.Users) (string, error) {
-	claims := CustomClaims{
-		UserInfo: userInfo,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 100).Unix(), // Set expiration time
-		},
+func CreateToken() (string, error) {
+	claims := &jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+		Issuer:    "your-app",
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(signKey)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	return token.SignedString(privateKey)
 }
 
 // reads the login credentials, checks them and creates JWT the token
@@ -113,12 +121,12 @@ func GenerateKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//decode into User struct
-	users, err := FetchEachUser(db, cookie.Value)
+	_, err = FetchEachUser(db, cookie.Value)
 	if err != nil {
 		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
 		return
 	}
-	tokenString, err := createToken(users)
+	tokenString, err := CreateToken()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, "Sorry, error while Signing Token!")
@@ -154,10 +162,10 @@ func AuthorizeAPI(next http.HandlerFunc) http.HandlerFunc {
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			// Validate the token method and return the key
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return verifyKey, nil
+			return publicKey, nil
 		})
 
 		if err != nil {

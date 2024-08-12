@@ -102,6 +102,37 @@ func MeasureHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/metrics", http.StatusSeeOther)
 }
 
+func ApiMeasureHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	apiEndpoint := r.FormValue("apiEndpoint")
+	if apiEndpoint == "" {
+		http.Error(w, "API endpoint is required", http.StatusBadRequest)
+		return
+	}
+
+	// Measure the API and store the metrics
+	dr, err := db.InitializeDB()
+	if err != nil {
+		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer dr.Close()
+
+	metrics := services.MeasureAPI(apiEndpoint)
+	err = db.StoreMetrics(dr, metrics)
+	if err != nil {
+		http.Error(w, "Error storing metrics", http.StatusInternalServerError)
+		return
+	}
+
+	// Redirect back to the metrics page
+	http.Redirect(w, r, "/api/metrics", http.StatusSeeOther)
+}
+
 // API handler to return metrics in JSON format
 func APIMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := db.InitializeDB()
