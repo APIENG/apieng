@@ -20,6 +20,7 @@ func InitializeDB() (*sql.DB, error) {
 	CREATE TABLE IF NOT EXISTS metrics (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		api_endpoint TEXT,
+		user_id TEXT,
 		request_size INTEGER,
 		response_size INTEGER,
 		response_time INTEGER,
@@ -32,7 +33,8 @@ func InitializeDB() (*sql.DB, error) {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		iid TEXT,
 		email TEXT,
-		password TEXT
+		password TEXT,
+		apikey TEXT
 	);`
 
 	_, err = db.Exec(createTableQuery)
@@ -55,10 +57,10 @@ func StoreMetrics(db *sql.DB, m models.Metrics) error {
 	}
 
 	insertQuery := `
-	INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption)
-	VALUES (?, ?, ?, ?, ?, ?);`
+	INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id)
+	VALUES (?, ?, ?, ?, ?, ?, ?);`
 
-	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption)
+	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption, m.UserId)
 	if err != nil {
 		return err
 	}
@@ -74,6 +76,18 @@ func StoreUsers(db *sql.DB, u models.Users) error {
 	VALUES (?, ?, ?);`
 
 	_, err := db.Exec(insertQuery, u.Iid, u.Email, u.Password)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateUser(db *sql.DB, iid string, apikey string) error {
+
+	insertQuery := `Update users set apikey = ? where iid = ?;`
+
+	_, err := db.Exec(insertQuery, apikey, iid)
 	if err != nil {
 		return err
 	}

@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 )
 
 // MeasureAPI collects metrics for a given API endpoint and estimates energy consumption.
-func MeasureAPI(endpoint string) models.Metrics {
+func MeasureAPI(endpoint string, user string) models.Metrics {
 	start := time.Now()
 	resp, err := http.Get(endpoint)
 	if err != nil {
@@ -33,9 +34,11 @@ func MeasureAPI(endpoint string) models.Metrics {
 
 	// Estimate energy consumption
 	energy := EnergyEstimate(responseTime, cpuUsage)
+	log.Printf("The user is %s", user)
 
 	metrics := models.Metrics{
 		APIEndpoint:       endpoint,
+		UserId:            user,
 		RequestSize:       len(endpoint), // Request size can include headers, etc.
 		ResponseSize:      len(body),
 		ResponseTime:      responseTime,
@@ -43,6 +46,7 @@ func MeasureAPI(endpoint string) models.Metrics {
 		EnergyConsumption: energy,
 	}
 
+	log.Printf("The user is %s", metrics.UserId)
 	// Debugging print statements
 	fmt.Printf("Collected metrics: %+v\n", metrics)
 

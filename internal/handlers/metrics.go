@@ -3,9 +3,12 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"text/template"
 	"time"
+
+	"github.com/gorilla/context"
 
 	"github.com/APIENG/apieng/internal/db"
 	"github.com/APIENG/apieng/internal/models"
@@ -17,8 +20,8 @@ type MetricsTemplateData struct {
 	Metrics []models.Metrics
 }
 
-func FetchMetrics(db *sql.DB) ([]models.Metrics, error) {
-	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption FROM metrics`)
+func FetchMetrics(db *sql.DB, UserId string) ([]models.Metrics, error) {
+	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id FROM metrics WHERE user_id = ?`, UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +31,7 @@ func FetchMetrics(db *sql.DB) ([]models.Metrics, error) {
 	for rows.Next() {
 		var m models.Metrics
 		var responseTime int64
-		err := rows.Scan(&m.APIEndpoint, &m.RequestSize, &m.ResponseSize, &responseTime, &m.Timestamp, &m.EnergyConsumption)
+		err := rows.Scan(&m.APIEndpoint, &m.RequestSize, &m.ResponseSize, &responseTime, &m.Timestamp, &m.EnergyConsumption, &m.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -52,7 +55,9 @@ func MetricsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	metrics, err := FetchMetrics(db)
+	token := context.Get(r, "user")
+	strToken, _ := token.(string)
+	metrics, err := FetchMetrics(db, strToken)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return
@@ -91,7 +96,11 @@ func MeasureHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dr.Close()
 
-	metrics := services.MeasureAPI(apiEndpoint)
+	// token := context.Get(r, "user")
+	// strToken, _ := token.(string)
+	cookie, err := r.Cookie("user_id")
+	log.Printf("cookie value iss %s", cookie.Value)
+	metrics := services.MeasureAPI(apiEndpoint, cookie.Value)
 	err = db.StoreMetrics(dr, metrics)
 	if err != nil {
 		http.Error(w, "Error storing metrics", http.StatusInternalServerError)
@@ -122,15 +131,22 @@ func ApiMeasureHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dr.Close()
 
-	metrics := services.MeasureAPI(apiEndpoint)
+	token := context.Get(r, "user")
+	strToken, _ := token.(string)
+	metrics := services.MeasureAPI(apiEndpoint, strToken)
 	err = db.StoreMetrics(dr, metrics)
 	if err != nil {
 		http.Error(w, "Error storing metrics", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(metrics)
+	if err != nil {
+		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+	}
 
 	// Redirect back to the metrics page
-	http.Redirect(w, r, "/api/metrics", http.StatusSeeOther)
+	//http.Redirect(w, r, "/api/metrics", http.StatusSeeOther)
 }
 
 // API handler to return metrics in JSON format
@@ -142,7 +158,9 @@ func APIMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	metrics, err := FetchMetrics(db)
+	token := context.Get(r, "user")
+	strToken, _ := token.(string)
+	metrics, err := FetchMetrics(db, strToken)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return

@@ -8,6 +8,7 @@ type Users struct {
 	Iid	  string
 	Email    string
 	Password string
+	Apikey  string
 }
 
 func (u *Users) SetPassword(password string) error {

@@ -13,6 +13,7 @@ import (
 	"github.com/APIENG/apieng/internal/db"
 	"github.com/APIENG/apieng/internal/models"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
 )
 
 // using asymmetric crypto/RSA keys
@@ -44,21 +45,41 @@ type CustomClaims struct {
 	jwt.StandardClaims
 }
 
-//var secretKey = []byte("your-secret-key")
 
 func FetchEachUser(db *sql.DB, iid string) (models.Users, error) {
 	// Prepare the SQL query with a placeholder for the iid
-	query := `SELECT iid, email, password FROM users WHERE iid LIKE ?`
+	query := `SELECT iid, email, password, apikey FROM users WHERE iid LIKE ?`
 
 	// Execute the query with the iid
 	row := db.QueryRow(query, iid)
 
 	var user models.Users
-	err := row.Scan(&user.Iid, &user.Email, &user.Password)
+	err := row.Scan(&user.Iid, &user.Email, &user.Password, &user.Apikey)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// No user found with the given iid
 			return models.Users{}, fmt.Errorf("no user found with iid %s", iid)
+		}
+		// Other errors
+		return models.Users{}, err
+	}
+
+	return user, nil
+}
+
+func FetchEachUserByToken(db *sql.DB, token string) (models.Users, error) {
+	// Prepare the SQL query with a placeholder for the iid
+	query := `SELECT iid, email, password, apikey FROM users WHERE apikey LIKE ?`
+
+	// Execute the query with the iid
+	row := db.QueryRow(query, token)
+
+	var user models.Users
+	err := row.Scan(&user.Iid, &user.Email, &user.Password, &user.Apikey)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// No user found with the given iid
+			return models.Users{}, fmt.Errorf("no user found with iid %s", token)
 		}
 		// Other errors
 		return models.Users{}, err
@@ -103,12 +124,12 @@ func CreateToken() (string, error) {
 
 // reads the login credentials, checks them and creates JWT the token
 func GenerateKey(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dr, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
+	defer dr.Close()
 
 	cookie, err := r.Cookie("user_id")
 	if err != nil || cookie.Value == "" {
@@ -120,12 +141,7 @@ func GenerateKey(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	//decode into User struct
-	_, err = FetchEachUser(db, cookie.Value)
-	if err != nil {
-		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
-		return
-	}
+
 	tokenString, err := CreateToken()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -133,6 +149,16 @@ func GenerateKey(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Token Signing error: %v\n", err)
 		return
 	}
+	token := context.Get(r, "user")
+	strToken, _ := token.(string)
+
+	err = db.UpdateUser(dr, strToken, tokenString)
+	if err != nil {
+		log.Printf("Error updating user: %v\n", err)
+		http.Error(w, "Error Generating key", http.StatusInternalServerError)
+		return
+	}
+	log.Printf("Token: here\n")
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(tokenString)
 
@@ -152,6 +178,12 @@ func jsonResponse(response Response, w http.ResponseWriter) {
 
 func AuthorizeAPI(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		dr, err := db.InitializeDB()
+		if err != nil {
+			http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
+			return
+		}
+		defer dr.Close()
 		tokenString := r.Header.Get("Authorization") // Assume token is sent in the Authorization header
 		log.Printf("%s", tokenString)
 
@@ -198,6 +230,12 @@ func AuthorizeAPI(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if token.Valid {
+			user, err := FetchEachUserByToken(dr, tokenString)
+			if err != nil {
+				http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
+				return
+			}
+			context.Set(r, "user", user.Iid)
 			next(w, r)
 		} else {
 			response := Response{"Invalid token"}

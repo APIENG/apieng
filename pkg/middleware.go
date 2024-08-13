@@ -32,7 +32,8 @@ func AuthorizeCookie(next http.HandlerFunc) http.HandlerFunc {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		context.Set(r, "token", cookie)
+		cookie2, err := r.Cookie("user_id")
+		context.Set(r, "user", cookie2.Value)
 		next(w, r)
 	}
 }

@@ -18,7 +18,7 @@ type UsersTemplateData struct {
 }
 
 func FetchUsers(db *sql.DB) ([]models.Users, error) {
-	rows, err := db.Query(`SELECT iid, email, password FROM users`)
+	rows, err := db.Query(`SELECT iid, email, password, apikey FROM users`)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func FetchUsers(db *sql.DB) ([]models.Users, error) {
 	var usersList []models.Users
 	for rows.Next() {
 		var m models.Users
-		err := rows.Scan(&m.Iid, &m.Email, &m.Password)
+		err := rows.Scan(&m.Iid, &m.Email, &m.Password, &m.Apikey)
 		if err != nil {
 			return nil, err
 		}
