@@ -98,7 +98,8 @@ func MeasureHandler(w http.ResponseWriter, r *http.Request) {
 
 	// token := context.Get(r, "user")
 	// strToken, _ := token.(string)
-	cookie, err := r.Cookie("user_id")
+	cookie, _ := r.Cookie("user_id")
+
 	log.Printf("cookie value iss %s", cookie.Value)
 	metrics := services.MeasureAPI(apiEndpoint, cookie.Value)
 	err = db.StoreMetrics(dr, metrics)
