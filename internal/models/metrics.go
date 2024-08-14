@@ -7,6 +7,7 @@ import (
 // Metrics represents the data structure for storing API metrics.
 type Metrics struct {
 	APIEndpoint       string
+	UserId            string
 	RequestSize       int
 	ResponseSize      int
 	ResponseTime      time.Duration
