@@ -27,6 +27,7 @@
                                 name="firstName"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                                 placeholder="First Name"
+                                required
                             >
                         </div>
                         <div class="space-y-2">
@@ -39,6 +40,7 @@
                                 name="lastName"
                                 class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                                 placeholder="Last Name"
+                                required
                             >
                         </div>
                     </div>
@@ -52,6 +54,7 @@
                             name="email"
                             class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                             placeholder="Enter your email"
+                            required
                         >
                     </div>
                     <div class="space-y-2">
@@ -64,6 +67,8 @@
                             name="password"
                             class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                             placeholder="Create a password"
+                            required
+                            minlength="8"
                         >
                         <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters long</p>
                     </div>
@@ -74,6 +79,7 @@
                                 name="terms"
                                 type="checkbox"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                required
                             >
                         </div>
                         <div class="ml-3">
