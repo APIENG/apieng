@@ -64,6 +64,15 @@
         .animation-delay-4000 {
             animation-delay: 4s;
         }
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Offset for fixed header */
+        section {
+            scroll-margin-top: 5rem;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen bg-white relative">
@@ -151,7 +160,7 @@
                                         <svg class="w-4 h-4" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                                         </svg>
-                                        <span style="color: var(--forest-green)">AI Recommendations</span>
+                                        <span style="color: var (--forest-green)">AI Recommendations</span>
                                     </div>
                                     <span class="ml-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full"
                                           style="background-color: var(--sage); color: var(--forest-green)">PRO</span>
@@ -343,7 +352,7 @@
         </section>
 
         <!-- Solution Section -->
-        <section class="py-16 relative overflow-hidden">
+        <section id="solution" class="py-16 relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <!-- Section Header -->
                 <div class="text-center mb-16">
@@ -458,7 +467,7 @@ const apieng = <span style="color: var(--light-green)">new</span> ApiEng({
         </section>
 
         <!-- Feature Section -->
-        <section class="py-16 relative overflow-hidden">
+        <section id="features" class="py-16 relative overflow-hidden">
             <!-- Section Content -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <!-- Section Header -->
@@ -561,7 +570,7 @@ const apieng = <span style="color: var(--light-green)">new</span> ApiEng({
         </section>
 
         <!-- Pricing Section -->
-        <section class="py-16 relative overflow-hidden">
+        <section id="pricing" class="py-16 relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <!-- Section Header -->
                 <div class="text-center mb-20">
