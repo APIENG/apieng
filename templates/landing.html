@@ -99,19 +99,69 @@
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-8">
                     <!-- Features Dropdown -->
-                    <button class="flex items-center space-x-2 text-sm font-medium transition-colors" 
-                            style="color: var(--medium-green)">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-                        </svg>
-                        <span>Features</span>
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="m6 9 6 6 6-6"></path>
-                        </svg>
-                    </button>
-                    
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-sm font-medium transition-colors group-hover:text-forest-green" 
+                                style="color: var(--medium-green)">
+                            <span>Features</span>
+                            <svg class="w-4 h-4 transition-transform group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div class="absolute left-0 mt-2 w-64 rounded-md border shadow-lg opacity-0 translate-y-2 invisible 
+                                    group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 z-50"
+                             style="background-color: var(--white); border-color: var(--sage)">
+                            <div class="p-1">
+                                <!-- Overview -->
+                                <a href="#overview" class="flex items-center space-x-2 px-2 py-2 rounded-sm text-sm hover:bg-sage/10 transition-colors">
+                                    <svg class="w-4 h-4" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                                    </svg>
+                                    <span style="color: var(--forest-green)">Overview</span>
+                                </a>
+
+                                <!-- API Metrics -->
+                                <a href="#metrics" class="flex items-center space-x-2 px-2 py-2 rounded-sm text-sm hover:bg-sage/10 transition-colors">
+                                    <svg class="w-4 h-4" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"/>
+                                    </svg>
+                                    <span style="color: var(--forest-green)">API Metrics</span>
+                                </a>
+
+                                <!-- Real-time Monitoring -->
+                                <a href="#monitoring" class="flex items-center space-x-2 px-2 py-2 rounded-sm text-sm hover:bg-sage/10 transition-colors">
+                                    <svg class="w-4 h-4" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                    <span style="color: var(--forest-green)">Real-time Monitoring</span>
+                                </a>
+
+                                <!-- Energy Analytics -->
+                                <a href="#analytics" class="flex items-center space-x-2 px-2 py-2 rounded-sm text-sm hover:bg-sage/10 transition-colors">
+                                    <svg class="w-4 h-4" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M21 7h-3a2 2 0 0 1-2-2V2M21 6v6.5c0 .8-.7 1.5-1.5 1.5h-7c-.8 0-1.5-.7-1.5-1.5v-9c0-.8.7-1.5 1.5-1.5H17Z"/>
+                                    </svg>
+                                    <span style="color: var(--forest-green)">Energy Analytics</span>
+                                </a>
+
+                                <!-- AI Recommendations -->
+                                <a href="#ai" class="flex items-center justify-between px-2 py-2 rounded-sm text-sm hover:bg-sage/10 transition-colors">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                        </svg>
+                                        <span style="color: var(--forest-green)">AI Recommendations</span>
+                                    </div>
+                                    <span class="ml-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full"
+                                          style="background-color: var(--sage); color: var(--forest-green)">PRO</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <a href="#solution" class="text-sm font-medium transition-colors hover:text-forest-green"
-                       style="color: var(--medium-green)">Solution</a>
+                          style="color: var(--medium-green)">Solution</a>
                     <a href="#pricing" class="text-sm font-medium transition-colors hover:text-forest-green"
                        style="color: var(--medium-green)">Pricing</a>
                     <a href="/docs" class="text-sm font-medium transition-colors hover:text-forest-green"
@@ -145,7 +195,7 @@
         </nav>
         
         <!-- Hero Section -->
-        <section class="relative overflow-hidden pt-32 md:pt-40 min-h-[90vh] flex items-center mb-24">
+        <section class="relative overflow-hidden pt-32 md:pt-40 min-h-[90vh] flex items-center mb-16">
             <div class="container mx-auto px-4 relative z-10">
                 <div class="text-center max-w-5xl mx-auto">
                     <!-- Badge -->
@@ -195,7 +245,7 @@
                 <!-- Replace the container div -->
                 <div class="container mx-auto px-4 relative z-10">
                     <!-- Add a max-width wrapper for the cards section -->
-                    <div class="max-w-4xl mx-auto mb-32"> <!-- Added larger bottom margin -->
+                    <div class="max-w-4xl mx-auto mb-20"> <!-- Changed from mb-32 to mb-20 -->
                         <div class="flex flex-col md:flex-row items-center justify-center gap-0">
                             <!-- API Card -->
                             <div class="relative animate-fade-in">
@@ -257,7 +307,7 @@
                                     <div class="absolute -top-1 right-0 w-1.5 h-1.5 rounded-full animate-ping"
                                          style="background-color: var(--forest-green)"></div>
                                     <div class="absolute -top-1 left-0 w-1.5 h-1.5 rounded-full animate-ping"
-                                         style="background-color: var(--medium-green)"></div>
+                                         style="background-color: var (--medium-green)"></div>
                                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                                         <div class="px-2 py-0.5 rounded-full text-center"
                                              style="background-color: var(--sage)">
@@ -292,8 +342,381 @@
             </div>
         </section>
 
+        <!-- Solution Section -->
+        <section class="py-16 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <!-- Section Header -->
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 animate-fade-in"
+                         style="background: linear-gradient(120deg, var(--sage) 0%, var(--cream) 100%);">
+                        <svg class="w-5 h-5" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm font-medium" style="color: var(--forest-green)">
+                            How It Works
+                        </span>
+                    </div>
+
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-forest-green to-medium-green bg-clip-text text-transparent"
+                        style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); -webkit-background-clip: text;">
+                        Simple Integration, Powerful Results
+                    </h2>
+                </div>
+
+                <!-- Solution Steps -->
+                <div class="grid md:grid-cols-2 gap-16 items-center">
+                    <!-- Left: Steps List -->
+                    <div class="space-y-8">
+                        <!-- Step 1 -->
+                        <div class="group relative pl-14">
+                            <div class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center"
+                                 style="background: linear-gradient(135deg, var(--sage), var(--light-green))">
+                                <span class="text-lg font-semibold" style="color: var(--forest-green)">1</span>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2" style="color: var(--forest-green)">
+                                Install Our SDK
+                            </h3>
+                            <p style="color: var(--medium-green)">
+                                Add our lightweight SDK to your project with a single command. Supports all major programming languages and frameworks.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="group relative pl-14">
+                            <div class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center"
+                                 style="background: linear-gradient(135deg, var(--sage), var(--light-green))">
+                                <span class="text-lg font-semibold" style="color: var(--forest-green)">2</span>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2" style="color: var(--forest-green)">
+                                Configure Endpoints
+                            </h3>
+                            <p style="color: var(--medium-green)">
+                                Specify which API endpoints you want to monitor. Our SDK automatically starts collecting metrics.
+                            </p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="group relative pl-14">
+                            <div class="absolute left-0 top-0 w-10 h-10 rounded-full flex items-center justify-center"
+                                 style="background: linear-gradient(135deg, var(--sage), var(--light-green))">
+                                <span class="text-lg font-semibold" style="color: var(--forest-green)">3</span>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2" style="color: var(--forest-green)">
+                                Monitor & Optimize
+                            </h3>
+                            <p style="color: var(--medium-green)">
+                                Access real-time metrics through our dashboard and receive AI-powered optimization recommendations.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Code Preview -->
+                    <div class="relative group">
+                        <div class="relative rounded-xl overflow-hidden backdrop-blur-sm border-2 shadow-2xl"
+                             style="border-color: var(--sage)">
+                            <!-- Code Header -->
+                            <div class="flex items-center justify-between px-4 py-2"
+                                 style="background-color: var(--forest-green)">
+                                <div class="flex space-x-2">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: var(--cream)"></div>
+                                    <div class="w-3 h-3 rounded-full" style="background-color: var(--sage)"></div>
+                                    <div class="w-3 h-3 rounded-full" style="background-color: var(--light-green)"></div>
+                                </div>
+                                <span class="text-sm" style="color: var(--cream)">apieng.config.js</span>
+                            </div>
+
+                            <!-- Code Content -->
+                            <div class="p-4" style="background-color: var(--forest-green)">
+                                <pre class="text-sm font-mono" style="color: var(--cream)">
+<span style="color: var(--light-green)">import</span> { ApiEng } <span style="color: var(--light-green)">from</span> '@apieng/sdk';
+
+<span style="color: var(--sage)">// Initialize APIENG</span>
+const apieng = <span style="color: var(--light-green)">new</span> ApiEng({
+  projectId: <span style="color: var(--cream)">'your-project-id'</span>,
+  endpoints: [
+    {
+      path: <span style="color: var(--cream)">'/api/users'</span>,
+      method: <span style="color: var(--cream)">'GET'</span>,
+      threshold: {
+        energy: <span style="color: var(--cream)">0.5</span>, <span style="color: var(--sage)">// watts</span>
+        response: <span style="color: var (--cream)">200</span>  <span style="color: var(--sage)">// ms</span>
+      }
+    }
+  ]
+});</pre>
+                            </div>
+                        </div>
+
+                        <!-- Decorative Elements -->
+                        <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full mix-blend-multiply filter blur-xl opacity-50"
+                             style="background: var(--sage)"></div>
+                        <div class="absolute -bottom-4 -left-4 w-24 h-24 rounded-full mix-blend-multiply filter blur-xl opacity-50"
+                             style="background: var(--light-green)"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Section -->
+        <section class="py-16 relative overflow-hidden">
+            <!-- Section Content -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <!-- Section Header -->
+                <div class="text-center mb-20">
+                    <!-- Feature Badge -->
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 animate-fade-in"
+                         style="background: linear-gradient(120deg, var(--sage) 0%, var(--cream) 100%);">
+                        <svg class="w-5 h-5" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <span class="text-sm font-medium" style="color: var(--forest-green)">
+                            Powerful Features
+                        </span>
+                    </div>
+        
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-forest-green to-medium-green bg-clip-text text-transparent"
+                        style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); -webkit-background-clip: text;">
+                        Monitor Every Aspect of Your API
+                    </h2>
+                    <p class="text-xl max-w-3xl mx-auto" style="color: var(--medium-green)">
+                        Comprehensive metrics and insights to optimize your API's performance and energy efficiency
+                    </p>
+                </div>
+        
+                <!-- Features Grid -->
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <!-- Feature Card 1: API Metrics -->
+                    <div class="group relative transform transition-all duration-300 hover:-translate-y-1">
+                        <div class="relative p-8 rounded-2xl border-2 backdrop-blur-sm"
+                             style="border-color: var(--sage); background-color: rgba(255, 255, 255, 0.5)">
+                            <div class="absolute inset-0 rounded-2xl transition-opacity group-hover:opacity-100 opacity-0"
+                                 style="background: linear-gradient(to bottom right, var (--sage), transparent);"></div>
+                            <div class="relative">
+                                <!-- Icon Container -->
+                                <div class="w-14 h-14 mb-6 rounded-2xl flex items-center justify-center"
+                                     style="background: linear-gradient(135deg, var(--sage), var(--light-green))">
+                                    <svg class="w-8 h-8" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4" style="color: var(--forest-green)">
+                                    Comprehensive Metrics
+                                </h3>
+                                <p style="color: var(--medium-green)">
+                                    Track request size, response time, and energy consumption for each endpoint in real-time.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Feature Card 2: Web Interface -->
+                    <div class="group relative transform transition-all duration-300 hover:-translate-y-1">
+                        <div class="relative p-8 rounded-2xl border-2 backdrop-blur-sm"
+                             style="border-color: var(--sage); background-color: rgba(255, 255, 255, 0.5)">
+                            <div class="absolute inset-0 rounded-2xl transition-opacity group-hover:opacity-100 opacity-0"
+                                 style="background: linear-gradient(to bottom right, var (--sage), transparent);"></div>
+                            <div class="relative">
+                                <!-- Icon Container -->
+                                <div class="w-14 h-14 mb-6 rounded-2xl flex items-center justify-center"
+                                     style="background: linear-gradient(135deg, var(--sage), var(--light-green))">
+                                    <svg class="w-8 h-8" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4" style="color: var(--forest-green)">
+                                    Intuitive Dashboard
+                                </h3>
+                                <p style="color: var(--medium-green)">
+                                    View your API's performance metrics through an elegant and user-friendly web interface.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <!-- Feature Card 3: JSON API -->
+                    <div class="group relative transform transition-all duration-300 hover:-translate-y-1">
+                        <div class="relative p-8 rounded-2xl border-2 backdrop-blur-sm"
+                             style="border-color: var(--sage); background-color: rgba(255, 255, 255, 0.5)">
+                            <div class="absolute inset-0 rounded-2xl transition-opacity group-hover:opacity-100 opacity-0"
+                                 style="background: linear-gradient(to bottom right, var(--sage), transparent);"></div>
+                            <div class="relative">
+                                <!-- Icon Container -->
+                                <div class="w-14 h-14 mb-6 rounded-2xl flex items-center justify-center"
+                                     style="background: linear-gradient(135deg, var(--sage), var(--light-green))">
+                                    <svg class="w-8 h-8" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold mb-4" style="color: var(--forest-green)">
+                                    JSON API Access
+                                </h3>
+                                <p style="color: var(--medium-green)">
+                                    Fetch metrics programmatically via our RESTful API with structured JSON responses.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="py-16 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <!-- Section Header -->
+                <div class="text-center mb-20">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 animate-fade-in"
+                         style="background: linear-gradient(120deg, var(--sage) 0%, var(--cream) 100%);">
+                        <svg class="w-5 h-5" style="color: var(--forest-green)" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm font-medium" style="color: var(--forest-green)">
+                            Simple Pricing
+                        </span>
+                    </div>
+
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-forest-green to-medium-green bg-clip-text text-transparent"
+                        style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); -webkit-background-clip: text;">
+                        Choose Your Plan
+                    </h2>
+                    <p class="text-xl max-w-3xl mx-auto" style="color: var(--medium-green)">
+                        Start with our free tier and scale as you grow
+                    </p>
+                </div>
+
+                <!-- Pricing Grid -->
+                <div class="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    <!-- Free Tier -->
+                    <div class="relative group">
+                        <div class="relative p-8 rounded-2xl border-2 backdrop-blur-sm"
+                             style="border-color: var(--sage); background-color: rgba(255, 255, 255, 0.5)">
+                            <h3 class="text-xl font-semibold mb-4" style="color: var(--forest-green)">Free</h3>
+                            <div class="mb-6">
+                                <span class="text-4xl font-bold" style="color: var(--forest-green)">$0</span>
+                                <span style="color: var(--medium-green)">/month</span>
+                            </div>
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Up to 10,000 requests/month
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Basic metrics
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    7-day data retention
+                                </li>
+                            </ul>
+                            <a href="/signup" class="block w-full py-3 px-6 rounded-lg text-center font-semibold transition-all duration-300"
+                               style="background-color: var(--sage); color: var(--forest-green)">
+                                Get Started
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Pro Tier -->
+                    <div class="relative group">
+                        <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-forest-green/20 to-medium-green/20 blur-xl 
+                                    group-hover:from-forest-green/30 group-hover:to-medium-green/30 transition-all duration-300"></div>
+                        <div class="relative p-8 rounded-2xl border-2 backdrop-blur-sm"
+                             style="border-color: var(--medium-green); background-color: rgba(255, 255, 255, 0.7)">
+                            <div class="absolute -top-5 right-8 px-4 py-1 rounded-full text-sm font-medium"
+                                 style="background-color: var(--sage); color: var(--forest-green)">
+                                Popular
+                            </div>
+                            <h3 class="text-xl font-semibold mb-4" style="color: var(--forest-green)">Pro</h3>
+                            <div class="mb-6">
+                                <span class="text-4xl font-bold" style="color: var(--forest-green)">$49</span>
+                                <span style="color: var(--medium-green)">/month</span>
+                            </div>
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Up to 100,000 requests/month
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Advanced metrics & insights
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    30-day data retention
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Priority support
+                                </li>
+                            </ul>
+                            <a href="/signup" class="block w-full py-3 px-6 rounded-lg text-center font-semibold transition-all duration-300"
+                               style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); color: var(--cream)">
+                                Get Started
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Tier -->
+                    <div class="relative group">
+                        <div class="relative p-8 rounded-2xl border-2 backdrop-blur-sm"
+                             style="border-color: var(--sage); background-color: rgba(255, 255, 255, 0.5)">
+                            <h3 class="text-xl font-semibold mb-4" style="color: var(--forest-green)">Enterprise</h3>
+                            <div class="mb-6">
+                                <span class="text-4xl font-bold" style="color: var(--forest-green)">Custom</span>
+                            </div>
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Unlimited requests
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Custom metrics & reporting
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Unlimited data retention
+                                </li>
+                                <li class="flex items-center gap-2" style="color: var(--medium-green)">
+                                    <svg class="w-5 h-5" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    24/7 dedicated support
+                                </li>
+                            </ul>
+                            <a href="/contact" class="block w-full py-3 px-6 rounded-lg text-center font-semibold transition-all duration-300"
+                               style="background-color: var(--sage); color: var(--forest-green)">
+                                Contact Sales
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- FAQ Section -->
-        <section class="py-32 relative"> <!-- Increased top and bottom padding -->
+        <section class="py-16 relative">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <!-- FAQ Header -->
                 <div class="text-center mb-16">
