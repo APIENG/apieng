@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APIENG - API Metrics</title>
+    <title>APIENG Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --forest-green: #123524;
@@ -28,27 +29,10 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(18, 53, 36, 0.1);
         }
-        #response {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(133, 169, 71, 0.2);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            font-family: 'Instrument Sans', monospace;
-            color: var(--forest-green);
-            display: none;
+        .chart-container {
+            position: relative;
+            height: 300px;
             width: 100%;
-            height: 140px;
-            margin-top: 1rem;
-            resize: none;
-        }
-        .copy-button {
-            display: none;
-            background: linear-gradient(to right, var(--forest-green), var(--medium-green));
-            color: var(--cream);
-            transition: all 0.3s ease;
-        }
-        .copy-button:hover {
-            opacity: 0.9;
         }
     </style>
 </head>
@@ -139,9 +123,9 @@
             <!-- Top Navigation -->
             <header class="bg-white shadow-sm">
                 <div class="flex items-center justify-between px-6 py-4">
-                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">API Metrics</h2>
+                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">Dashboard Overview</h2>
                     <div class="flex items-center space-x-4">
-                        <button onclick="fetchData()" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        <button class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                                 style="background-color: var(--forest-green); color: var(--cream)">
                             Generate API Key
                         </button>
@@ -150,49 +134,54 @@
                 </div>
             </header>
 
-            <!-- Metrics Content -->
+            <!-- Dashboard Content -->
             <div class="p-6 space-y-6">
-                <!-- API Endpoint Input -->
-                <div class="dashboard-card p-6 rounded-xl">
-                    <form action="/measure" method="POST" class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <input type="text" 
-                                   name="apiEndpoint" 
-                                   placeholder="Enter API Endpoint URL"
-                                   class="flex-1 px-4 py-2 rounded-lg text-sm transition-colors"
-                                   style="border: 1px solid var(--sage); color: var(--forest-green)"
-                                   required>
-                            <button type="submit" 
-                                    class="px-6 py-2 rounded-lg text-sm font-medium transition-colors"
-                                    style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); color: var(--cream)">
-                                Measure
-                            </button>
-                        </div>
-                    </form>
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="dashboard-card p-6 rounded-xl">
+                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">Total Requests</h3>
+                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">24,589</p>
+                        <div class="mt-2 text-sm" style="color: var(--light-green)">↑ 12% from last week</div>
+                    </div>
+                    <div class="dashboard-card p-6 rounded-xl">
+                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">Avg Response Time</h3>
+                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">235ms</p>
+                        <div class="mt-2 text-sm" style="color: var(--light-green)">↓ 8% from last week</div>
+                    </div>
+                    <div class="dashboard-card p-6 rounded-xl">
+                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">Energy Usage</h3>
+                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">1.2 kWh</p>
+                        <div class="mt-2 text-sm" style="color: var(--light-green)">↓ 15% from last week</div>
+                    </div>
+                    <div class="dashboard-card p-6 rounded-xl">
+                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">Active Endpoints</h3>
+                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">12</p>
+                        <div class="mt-2 text-sm" style="color: var(--light-green)">+2 new this week</div>
+                    </div>
                 </div>
 
-                <!-- API Key Response -->
-                <div class="space-y-3">
-                    <textarea id="response" readonly></textarea>
-                    <button id="copy" 
-                            onclick="copyToClipboard()" 
-                            class="copy-button px-4 py-2 rounded-lg text-sm font-medium">
-                        Copy API Key
-                    </button>
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="dashboard-card p-6 rounded-xl">
+                        <h3 class="text-sm font-medium mb-4" style="color: var(--medium-green)">Request Volume</h3>
+                        <canvas id="requestChart" height="200"></canvas>
+                    </div>
+                    <div class="dashboard-card p-6 rounded-xl">
+                        <h3 class="text-sm font-medium mb-4" style="color: var(--medium-green)">Energy Consumption</h3>
+                        <canvas id="energyChart" height="200"></canvas>
+                    </div>
                 </div>
 
                 <!-- Metrics Table -->
                 <div class="dashboard-card rounded-xl overflow-hidden">
                     <div class="p-6 border-b" style="border-color: var(--sage)">
-                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">API Metrics History</h3>
+                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">Recent API Calls</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr style="background-color: var(--sage)">
-                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">API Endpoint</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Request Size</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Response Size</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Endpoint</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Response Time</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Energy Used</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Timestamp</th>
@@ -200,17 +189,11 @@
                             </thead>
                             <tbody>
                                 {{range .Metrics}}
-                                <tr class="border-t hover:bg-gray-50" style="border-color: var(--sage)">
-                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.APIEndpoint}}</td>
-                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.RequestSize}} bytes</td>
-                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.ResponseSize}} bytes</td>
-                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.ResponseTime.Milliseconds}}ms</td>
-                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.EnergyConsumption}} J</td>
-                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.Timestamp}}</td>
-                                </tr>
-                                {{else}}
-                                <tr>
-                                    <td colspan="6" class="px-6 py-4 text-sm text-center" style="color: var(--medium-green)">No metrics available</td>
+                                <tr class="border-t" style="border-color: var(--sage)">
+                                    <td class="px-6 py-4 text-sm">{{.APIEndpoint}}</td>
+                                    <td class="px-6 py-4 text-sm">{{.ResponseTime.Milliseconds}}ms</td>
+                                    <td class="px-6 py-4 text-sm">{{.EnergyConsumption}} J</td>
+                                    <td class="px-6 py-4 text-sm">{{.Timestamp}}</td>
                                 </tr>
                                 {{end}}
                             </tbody>
@@ -221,52 +204,132 @@
         </main>
     </div>
 
-    <script> async function fetchData() {
-        try {
-            const apiUrl = 'http://localhost:8080/generate';
-    
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+    <script>
+        // Chart configuration and styling
+        const chartConfig = {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,  // Add this line
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#123524', // forest-green
+                        font: {
+                            family: 'Instrument Sans',
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#123524',
+                    bodyColor: '#3E7B27',
+                    borderColor: '#85A947',
+                    borderWidth: 1,
+                    padding: 12,
+                    bodyFont: {
+                        family: 'Instrument Sans'
+                    },
+                    titleFont: {
+                        family: 'Instrument Sans',
+                        weight: 600
+                    }
                 }
-            });
-            if (!response.ok) {
-                throw new Error(`An error occurred: ${response.statusText}`);
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(133, 169, 71, 0.1)',
+                    },
+                    ticks: {
+                        color: '#3E7B27',
+                        font: {
+                            family: 'Instrument Sans'
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(133, 169, 71, 0.1)',
+                    },
+                    ticks: {
+                        color: '#3E7B27',
+                        font: {
+                            family: 'Instrument Sans'
+                        }
+                    }
+                }
             }
-    
-            const data = await response.json();
-            console.log('Data:', data);
-            const responseElement = document.getElementById('response');
-            responseElement.style.display= 'block';
-            let value = JSON.stringify(data, null, 2);
-            value = value.slice(1);
-            value = value.slice(0, -1);
-            responseElement.innerHTML = value;
-            const ele= document.getElementById('copy');
-            copy.style.display = 'block';
-        } catch (error) {
-            // Handle errors
-            console.error('Error fetching data:', error);
-            const responseElement = document.getElementById('response');
-            responseElement.textContent = 'Failed to fetch data.';
-        }
-    }
-    function copyToClipboard() {
-        const element = document.getElementById("response");
-        const text = element.textContent || element.innerText;
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-    
-        document.body.removeChild(textarea);
-    
-        alert('Text copied to clipboard!');
-    }
-    
-    
+        };
+
+        // Request Volume Chart
+        const requestChart = new Chart(document.getElementById('requestChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Requests',
+                    data: [1200, 1900, 1500, 2100, 1800, 2200, 1600],
+                    borderColor: '#3E7B27',
+                    backgroundColor: 'rgba(62, 123, 39, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: '#3E7B27',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                ...chartConfig,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // Energy Consumption Chart
+        const energyChart = new Chart(document.getElementById('energyChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Energy (kWh)',
+                    data: [0.8, 1.2, 0.9, 1.5, 1.1, 1.3, 1.0],
+                    borderColor: '#85A947',
+                    backgroundColor: 'rgba(133, 169, 71, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: '#85A947',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                ...chartConfig,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            requestChart.resize();
+            energyChart.resize();
+        });
     </script>
 </body>
 </html>
