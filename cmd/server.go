@@ -24,6 +24,10 @@ func main() {
 	// Add dashboard route
 	mux.HandleFunc("/dashboard", handlers.DashboardHandler)
 
+	// Add login and signup routes
+	mux.HandleFunc("/login", handlers.LoginHandler)
+	mux.HandleFunc("/signup", handlers.SignUpHandler)
+
 	log.Println("Server starting on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)

@@ -19,17 +19,32 @@
             font-family: 'Instrument Sans', sans-serif;
         }
         .dashboard-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(133, 169, 71, 0.1);
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
         .dashboard-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(18, 53, 36, 0.1);
         }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
         #response {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(133, 169, 71, 0.2);
             border-radius: 0.75rem;
             padding: 1rem;
@@ -40,15 +55,53 @@
             height: 140px;
             margin-top: 1rem;
             resize: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .copy-button {
             display: none;
-            background: linear-gradient(to right, var(--forest-green), var(--medium-green));
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
             color: var(--cream);
             transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .copy-button:hover {
             opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--cream);
+        }
+        .input-focus {
+            transition: all 0.2s ease;
+        }
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(62, 123, 39, 0.1);
+            border-color: var(--medium-green);
+        }
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        .table-row:hover {
+            background-color: rgba(233, 238, 217, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
+            color: var(--cream);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -59,7 +112,7 @@
         <aside class="w-64 h-full flex flex-col shadow-lg" style="background-color: #123524; color: #E9EED9;">
             <!-- Logo Section -->
             <div class="p-6">
-                <h1 class="text-2xl font-bold tracking-wider">APIENG</h1>
+                <h1 class="text-2xl font-bold tracking-wider">API Metrics</h1>
             </div>
 
             <!-- Main Navigation -->
@@ -67,13 +120,13 @@
                 <div class="mb-6">
                     <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Main</p>
                     <div class="space-y-1">
-                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
+                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
                             Dashboard
                         </a>
-                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
@@ -82,21 +135,21 @@
                     </div>
                 </div>
 
-                <!-- Management Section -->
+                <!-- API Management -->
                 <div class="mb-6">
-                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Management</p>
+                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">API Management</p>
                     <div class="space-y-1">
+                        <a href="/endpoints" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Endpoints
+                        </a>
                         <a href="/api-keys" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                             </svg>
                             API Keys
-                        </a>
-                        <a href="/integrations" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            Integrations
                         </a>
                     </div>
                 </div>
@@ -104,7 +157,6 @@
 
             <!-- Bottom Section -->
             <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
-                <!-- Settings -->
                 <a href="/settings" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -112,40 +164,28 @@
                     </svg>
                     Settings
                 </a>
-
-                <!-- User Section -->
-                <div class="mt-6 pt-6 border-t border-white/10">
-                    <div class="flex items-center p-2">
-                        <div class="w-10 h-10 rounded-full bg-sky-500/20 flex items-center justify-center">
-                            <span class="text-sm font-semibold text-sky-100">JD</span>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium">John Doe</p>
-                            <p class="text-xs opacity-60">john@example.com</p>
-                        </div>
-                    </div>
-                    <a href="/signout" class="flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        Sign Out
-                    </a>
-                </div>
+                <a href="/logout" class="flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-1 overflow-auto">
             <!-- Top Navigation -->
-            <header class="bg-white shadow-sm">
+            <header class="glass-effect sticky top-0 z-10">
                 <div class="flex items-center justify-between px-6 py-4">
-                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">API Metrics</h2>
+                    <div>
+                        <h2 class="text-xl font-semibold" style="color: var(--forest-green)">API Metrics</h2>
+                        <p class="text-sm text-gray-600 mt-1">Monitor and analyze your API performance</p>
+                    </div>
                     <div class="flex items-center space-x-4">
-                        <button onclick="fetchData()" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                                style="background-color: var(--forest-green); color: var(--cream)">
+                        <button onclick="fetchData()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
                             Generate API Key
                         </button>
-                        <div class="w-8 h-8 rounded-full bg-gray-200"></div>
                     </div>
                 </div>
             </header>
@@ -156,15 +196,20 @@
                 <div class="dashboard-card p-6 rounded-xl">
                     <form action="/measure" method="POST" class="space-y-4">
                         <div class="flex items-center gap-4">
-                            <input type="text" 
-                                   name="apiEndpoint" 
-                                   placeholder="Enter API Endpoint URL"
-                                   class="flex-1 px-4 py-2 rounded-lg text-sm transition-colors"
-                                   style="border: 1px solid var(--sage); color: var(--forest-green)"
-                                   required>
-                            <button type="submit" 
-                                    class="px-6 py-2 rounded-lg text-sm font-medium transition-colors"
-                                    style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); color: var(--cream)">
+                            <div class="flex-1 relative">
+                                <input type="text" 
+                                       name="apiEndpoint" 
+                                       placeholder="Enter API Endpoint URL"
+                                       class="input-focus w-full px-4 py-2 rounded-lg text-sm"
+                                       style="border: 1px solid var(--sage); color: var(--forest-green)"
+                                       required>
+                                <div class="absolute right-3 top-2.5">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary px-6 py-2 rounded-lg text-sm font-medium">
                                 Measure
                             </button>
                         </div>
@@ -183,8 +228,22 @@
 
                 <!-- Metrics Table -->
                 <div class="dashboard-card rounded-xl overflow-hidden">
-                    <div class="p-6 border-b" style="border-color: var(--sage)">
+                    <div class="p-6 border-b flex items-center justify-between" style="border-color: var(--sage)">
                         <h3 class="text-sm font-medium" style="color: var(--medium-green)">API Metrics History</h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <input type="text" placeholder="Search..." class="input-focus pl-8 pr-4 py-2 text-sm border rounded-lg">
+                                <svg class="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Export
+                            </button>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -200,7 +259,7 @@
                             </thead>
                             <tbody>
                                 {{range .Metrics}}
-                                <tr class="border-t hover:bg-gray-50" style="border-color: var(--sage)">
+                                <tr class="table-row border-t" style="border-color: var(--sage)">
                                     <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.APIEndpoint}}</td>
                                     <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.RequestSize}} bytes</td>
                                     <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.ResponseSize}} bytes</td>
@@ -216,57 +275,65 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="px-6 py-4 border-t flex items-center justify-between" style="border-color: var(--sage)">
+                        <div class="text-sm text-gray-600">
+                            Showing 1-10 of 100 results
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-50">Previous</button>
+                            <button class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-50">Next</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script> async function fetchData() {
-        try {
-            const apiUrl = 'http://localhost:8080/generate';
-    
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+    <script>
+        async function fetchData() {
+            try {
+                const apiUrl = 'http://localhost:8080/generate';
+        
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`An error occurred: ${response.statusText}`);
                 }
-            });
-            if (!response.ok) {
-                throw new Error(`An error occurred: ${response.statusText}`);
+        
+                const data = await response.json();
+                console.log('Data:', data);
+                const responseElement = document.getElementById('response');
+                responseElement.style.display = 'block';
+                let value = JSON.stringify(data, null, 2);
+                value = value.slice(1);
+                value = value.slice(0, -1);
+                responseElement.innerHTML = value;
+                const ele = document.getElementById('copy');
+                copy.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                const responseElement = document.getElementById('response');
+                responseElement.textContent = 'Failed to fetch data.';
             }
-    
-            const data = await response.json();
-            console.log('Data:', data);
-            const responseElement = document.getElementById('response');
-            responseElement.style.display= 'block';
-            let value = JSON.stringify(data, null, 2);
-            value = value.slice(1);
-            value = value.slice(0, -1);
-            responseElement.innerHTML = value;
-            const ele= document.getElementById('copy');
-            copy.style.display = 'block';
-        } catch (error) {
-            // Handle errors
-            console.error('Error fetching data:', error);
-            const responseElement = document.getElementById('response');
-            responseElement.textContent = 'Failed to fetch data.';
         }
-    }
-    function copyToClipboard() {
-        const element = document.getElementById("response");
-        const text = element.textContent || element.innerText;
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-    
-        document.body.removeChild(textarea);
-    
-        alert('Text copied to clipboard!');
-    }
-    
-    
+
+        function copyToClipboard() {
+            const element = document.getElementById("response");
+            const text = element.textContent || element.innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+        
+            document.body.removeChild(textarea);
+        
+            alert('Text copied to clipboard!');
+        }
     </script>
 </body>
 </html>
