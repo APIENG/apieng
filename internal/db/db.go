@@ -24,6 +24,8 @@ func InitializeDB() (*sql.DB, error) {
 		request_size INTEGER,
 		response_size INTEGER,
 		response_time INTEGER,
+		method TEXT DEFAULT 'GET',
+		status INTEGER DEFAULT 200,
 		timestamp DATETIME,
 		energy_consumption REAL
 	);`
@@ -33,6 +35,8 @@ func InitializeDB() (*sql.DB, error) {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		iid TEXT,
 		email TEXT,
+		firstname TEXT,
+		lastname TEXT,
 		password TEXT,
 		apikey TEXT
 	);`
@@ -57,10 +61,10 @@ func StoreMetrics(db *sql.DB, m models.Metrics) error {
 	}
 
 	insertQuery := `
-	INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id)
-	VALUES (?, ?, ?, ?, ?, ?, ?);`
+	INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id, method, status)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`
 
-	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption, m.UserId)
+	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption, m.UserId, m.Method, m.Status)
 	if err != nil {
 		return err
 	}
@@ -71,11 +75,13 @@ func StoreMetrics(db *sql.DB, m models.Metrics) error {
 // StoreUsers stores the collected users in the database.
 func StoreUsers(db *sql.DB, u models.Users) error {
 
-	insertQuery := `
-	INSERT INTO users (iid, email, password)
-	VALUES (?, ?, ?);`
+	// log.Println(u.Iid, u.Email, u.FirstName, u.LastName, u.Password)
 
-	_, err := db.Exec(insertQuery, u.Iid, u.Email, u.Password)
+	insertQuery := `
+	INSERT INTO users (iid, email, firstname, lastname, password)
+	VALUES (?, ?, ?, ?, ?);`
+
+	_, err := db.Exec(insertQuery, u.Iid, u.Email, u.FirstName, u.LastName, u.Password)
 	if err != nil {
 		return err
 	}

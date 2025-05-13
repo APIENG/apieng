@@ -1,14 +1,18 @@
 package models
 
 import (
+	"database/sql"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Users struct {
-	Iid	  string
-	Email    string
-	Password string
-	Apikey  string
+	Iid       string
+	Email     string
+	FirstName string
+	LastName  string
+	Password  string
+	Apikey    sql.NullString
 }
 
 func (u *Users) SetPassword(password string) error {

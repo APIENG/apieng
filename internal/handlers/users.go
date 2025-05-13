@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"text/template"
 	"time"
@@ -18,7 +19,7 @@ type UsersTemplateData struct {
 }
 
 func FetchUsers(db *sql.DB) ([]models.Users, error) {
-	rows, err := db.Query(`SELECT iid, email, password, apikey FROM users`)
+	rows, err := db.Query(`SELECT iid, email, firstname, lastname, password, apikey FROM users`)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +28,7 @@ func FetchUsers(db *sql.DB) ([]models.Users, error) {
 	var usersList []models.Users
 	for rows.Next() {
 		var m models.Users
-		err := rows.Scan(&m.Iid, &m.Email, &m.Password, &m.Apikey)
+		err := rows.Scan(&m.Iid, &m.Email, &m.FirstName, &m.LastName, &m.Password, &m.Apikey)
 		if err != nil {
 			return nil, err
 		}
@@ -78,6 +79,7 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	users, err := FetchUsers(db)
 	if err != nil {
+		log.Println("error:", err)
 		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
 		return
 	}
@@ -103,11 +105,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+	firstname := r.FormValue("firstName")
+	lastname := r.FormValue("lastName")
 	iid := services.GenerateSessionID()
 	user := models.Users{
-		Email:    email,
-		Password: password,
-		Iid:      iid,
+		Email:     email,
+		Password:  password,
+		Iid:       iid,
+		FirstName: firstname,
+		LastName:  lastname,
 	}
 	if email == "" || password == "" {
 		http.Error(w, "email and password is required", http.StatusBadRequest)
@@ -128,12 +134,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	err = db.StoreUsers(dr, user)
 	if err != nil {
+		log.Println("error:", err)
 		http.Error(w, "Error storing users", http.StatusInternalServerError)
 		return
 	}
 
 	// Redirect back to the login page
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 // Handle the login of users
@@ -158,6 +165,7 @@ func LoginusersHandler(w http.ResponseWriter, r *http.Request) {
 
 	users, err := FetchUsers(db)
 	if err != nil {
+		log.Println("error:", err)
 		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
 		return
 	}

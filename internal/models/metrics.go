@@ -8,6 +8,8 @@ import (
 type Metrics struct {
 	APIEndpoint       string
 	UserId            string
+	Method            string
+	Status            int
 	RequestSize       int
 	ResponseSize      int
 	ResponseTime      time.Duration

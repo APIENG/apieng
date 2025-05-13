@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/APIENG/apieng/internal/handlers"
 	"github.com/APIENG/apieng/pkg"
 	"github.com/gorilla/mux"
@@ -9,7 +11,11 @@ import (
 func SetupRouter() *mux.Router {
 	router := mux.NewRouter()
 
+	fs := http.FileServer(http.Dir("static"))
+	router.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	router.HandleFunc("/", handlers.LandingHandler).Methods("GET")
+	router.HandleFunc("/dashboard", handlers.DashboardHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 	router.HandleFunc("/signup", handlers.SignUpHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginusersHandler).Methods("POST")
