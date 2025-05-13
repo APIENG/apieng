@@ -21,7 +21,7 @@ type MetricsTemplateData struct {
 }
 
 func FetchMetrics(db *sql.DB, UserId string) ([]models.Metrics, error) {
-	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id FROM metrics WHERE user_id = ?`, UserId)
+	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id, status, method FROM metrics WHERE user_id = ?`, UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func FetchMetrics(db *sql.DB, UserId string) ([]models.Metrics, error) {
 	for rows.Next() {
 		var m models.Metrics
 		var responseTime int64
-		err := rows.Scan(&m.APIEndpoint, &m.RequestSize, &m.ResponseSize, &responseTime, &m.Timestamp, &m.EnergyConsumption, &m.UserId)
+		err := rows.Scan(&m.APIEndpoint, &m.RequestSize, &m.ResponseSize, &responseTime, &m.Timestamp, &m.EnergyConsumption, &m.UserId, &m.Status, &m.Method)
 		if err != nil {
 			return nil, err
 		}

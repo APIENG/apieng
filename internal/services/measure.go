@@ -43,6 +43,8 @@ func MeasureAPI(endpoint string, user string) models.Metrics {
 		ResponseSize:      len(body),
 		ResponseTime:      responseTime,
 		Timestamp:         time.Now(),
+		Method:            "GET",
+		Status:            resp.StatusCode,
 		EnergyConsumption: energy,
 	}
 
