@@ -4,78 +4,284 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Energy Consumption Metrics | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+            --white: #FFFFFF;
+        }
+        * {
+            font-family: 'Instrument Sans', sans-serif;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .backdrop-blur-sm {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--medium-green);
+            box-shadow: 0 0 0 2px rgba(62, 123, 39, 0.1);
+        }
+
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(62, 123, 39, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .animate-float {
+                animation: none;
+            }
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 20s linear infinite;
+            transform-origin: center;
+        }
+
+        .animate-dash {
+            stroke-dasharray: 4,4;
+            animation: dash 1s linear infinite;
+        }
+
+        .animation-delay-1000 {
+            animation-delay: 1s;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+    </style>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-    <div class="w-full max-w-md">
-        <div class="bg-white rounded-xl shadow-xl overflow-hidden">
-            <div class="p-6 bg-indigo-50">
-                <h1 class="text-2xl font-bold text-center text-gray-900">Welcome Back</h1>
-                <p class="text-center text-gray-600 mt-2">Login to monitor your API metrics</p>
+<body class="flex min-h-screen relative">
+    <!-- Left: Illustration Section -->
+    <div class="hidden lg:flex w-1/2 relative overflow-hidden" 
+         style="background: linear-gradient(135deg, var(--forest-green), var(--medium-green))">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute w-full h-full opacity-10">
+                <div class="absolute top-0 left-0 w-full h-full" 
+                     style="background: radial-gradient(circle at 0% 0%, var(--sage) 0%, transparent 50%)"></div>
+                <div class="absolute bottom-0 right-0 w-full h-full" 
+                     style="background: radial-gradient(circle at 100% 100%, var(--light-green) 0%, transparent 50%)"></div>
+            </div>
+            <!-- Floating Particles -->
+            <div class="absolute inset-0">
+                <div class="absolute top-1/4 left-1/4 w-2 h-2 rounded-full animate-pulse-slow"
+                     style="background: var(--cream)"></div>
+                <div class="absolute top-3/4 left-2/3 w-3 h-3 rounded-full animate-pulse-slow animation-delay-1000"
+                     style="background: var(--sage)"></div>
+                <div class="absolute top-1/2 right-1/4 w-2 h-2 rounded-full animate-pulse-slow animation-delay-2000"
+                     style="background: var(--light-green)"></div>
+            </div>
+        </div>
+
+        <!-- Main Illustration Container -->
+        <div class="relative z-10 flex flex-col items-center justify-center w-full p-12">
+            <div class="relative w-96 h-96 animate-float">
+                <!-- Modern API Visualization -->
+                <svg class="w-full h-full" viewBox="0 0 400 400" fill="none">
+                    <!-- Central Hub -->
+                    <circle cx="200" cy="200" r="80" fill="var(--cream)" fill-opacity="0.1" stroke="var(--cream)" stroke-width="2"/>
+                    <circle cx="200" cy="200" r="60" fill="var(--cream)" fill-opacity="0.05" stroke="var(--cream)" stroke-width="1"/>
+                    
+                    <!-- Orbital Rings -->
+                    <circle cx="200" cy="200" r="120" stroke="var(--sage)" stroke-width="1" stroke-dasharray="4,4" class="animate-spin-slow"/>
+                    <circle cx="200" cy="200" r="160" stroke="var(--light-green)" stroke-width="1" stroke-dasharray="4,4" class="animate-spin-slow"/>
+                    
+                    <!-- Data Nodes -->
+                    <g class="animate-pulse-slow">
+                        <!-- Inner Nodes -->
+                        <circle cx="200" cy="80" r="12" fill="var(--sage)" fill-opacity="0.3"/>
+                        <circle cx="320" cy="200" r="12" fill="var(--light-green)" fill-opacity="0.3"/>
+                        <circle cx="200" cy="320" r="12" fill="var(--sage)" fill-opacity="0.3"/>
+                        <circle cx="80" cy="200" r="12" fill="var(--light-green)" fill-opacity="0.3"/>
+                        
+                        <!-- Outer Nodes -->
+                        <circle cx="280" cy="80" r="8" fill="var(--cream)" fill-opacity="0.2"/>
+                        <circle cx="320" cy="280" r="8" fill="var(--cream)" fill-opacity="0.2"/>
+                        <circle cx="120" cy="320" r="8" fill="var(--cream)" fill-opacity="0.2"/>
+                        <circle cx="80" cy="120" r="8" fill="var(--cream)" fill-opacity="0.2"/>
+                    </g>
+
+                    <!-- Connection Lines -->
+                    <g stroke="var(--cream)" stroke-width="1" stroke-opacity="0.3">
+                        <path d="M200,140 Q200,170 240,200" class="animate-dash"/>
+                        <path d="M260,200 Q290,200 320,240" class="animate-dash"/>
+                        <path d="M200,260 Q200,290 160,320" class="animate-dash"/>
+                        <path d="M140,200 Q110,200 80,160" class="animate-dash"/>
+                    </g>
+
+                    <!-- Energy Pulses -->
+                    <g class="animate-pulse-slow">
+                        <circle cx="200" cy="200" r="30" stroke="var(--light-green)" stroke-width="2" fill="none"/>
+                        <circle cx="200" cy="200" r="20" stroke="var(--sage)" stroke-width="2" fill="none"/>
+                    </g>
+                </svg>
             </div>
 
-            <div class="p-6 space-y-6">
-                <form action="/login" method="POST" class="space-y-4">
-
-                    <div class="space-y-2">
-                        <label for="email" class="block text-sm font-medium text-gray-700">
-                            Email address
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                            placeholder="Enter your email"
-                            required
-                        >
-                    </div>
-
-                    <div class="space-y-2">
-                        <label for="password" class="block text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                            placeholder="Enter your password"
-                            required
-                        >
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <input
-                                id="remember-me"
-                                name="remember-me"
-                                type="checkbox"
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            >
-                            <label for="remember-me" class="ml-2 block text-sm text-gray-700">
-                                Remember me
-                            </label>
-                        </div>
-                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                            Forgot password?
-                        </a>
-                    </div>
-
-                    <button
-                        type="submit"
-                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-                    >
-                        Sign in
-                    </button>
-                </form>
-
-                <p class="text-center text-sm text-gray-600">
-                    Don't have an account?
-                    <a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-500">
-                        Sign up
-                    </a>
+            <!-- Enhanced Text Content -->
+            <div class="text-center mt-12 space-y-4">
+                <h2 class="text-3xl font-bold bg-gradient-to-r from-cream to-sage bg-clip-text text-transparent">
+                    Monitor Your API's Energy Footprint
+                </h2>
+                <p class="text-lg" style="color: var(--sage)">
+                    Real-time metrics and insights for sustainable API development
                 </p>
+                <div class="flex justify-center gap-4 mt-6">
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full" 
+                         style="background: rgba(255, 255, 255, 0.1)">
+                        <div class="w-2 h-2 rounded-full animate-pulse" 
+                             style="background: var(--light-green)"></div>
+                        <span class="text-sm" style="color: var(--cream)">Live Monitoring</span>
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 rounded-full" 
+                         style="background: rgba(255, 255, 255, 0.1)">
+                        <div class="w-2 h-2 rounded-full animate-pulse" 
+                             style="background: var(--sage)"></div>
+                        <span class="text-sm" style="color: var(--cream)">Real-time Analytics</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Login Form Section -->
+    <div class="flex-1 flex items-center justify-center p-4 sm:p-8 relative">
+        <!-- Background Elements -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none lg:hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] opacity-20"
+                 style="background: radial-gradient(circle at center, var(--sage) 0%, transparent 70%)">
+            </div>
+            <div class="absolute top-1/4 right-1/4 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20"
+                 style="background: var(--sage)"></div>
+            <div class="absolute bottom-1/4 left-1/4 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-30"
+                 style="background: var(--light-green)"></div>
+        </div>
+
+        <!-- Login Form Container -->
+        <div class="w-full max-w-md relative z-10 animate-fade-in">
+
+            <div class="backdrop-blur-sm border-2 rounded-2xl shadow-xl overflow-hidden"
+                 style="border-color: var(--sage); background-color: rgba(255, 255, 255, 0.8)">
+                <div class="p-6" style="background: linear-gradient(to right, var(--sage), var(--cream))">
+                    <h1 class="text-2xl font-bold text-center" style="color: var(--forest-green)">Welcome Back</h1>
+                    <p class="text-center mt-2" style="color: var(--medium-green)">Login to monitor your API metrics</p>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <form action="/login" method="POST" class="space-y-4">
+                        <div class="space-y-2">
+                            <label for="email" class="block text-sm font-medium" style="color: var(--forest-green)">
+                                Email address
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="block w-full px-3 py-2 rounded-lg text-sm transition-colors duration-200"
+                                style="border: 2px solid var(--sage); color: var(--forest-green); background-color: var(--white)"
+                                placeholder="Enter your email"
+                                required
+                            >
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="password" class="block text-sm font-medium" style="color: var(--forest-green)">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="block w-full px-3 py-2 rounded-lg text-sm transition-colors duration-200"
+                                style="border: 2px solid var(--sage); color: var(--forest-green); background-color: var(--white)"
+                                placeholder="Enter your password"
+                                required
+                            >
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input
+                                    id="remember-me"
+                                    name="remember-me"
+                                    type="checkbox"
+                                    class="h-4 w-4 rounded"
+                                    style="border-color: var(--sage); color: var(--medium-green)"
+                                >
+                                <label for="remember-me" class="ml-2 block text-sm" style="color: var (--medium-green)">
+                                    Remember me
+                                </label>
+                            </div>
+                            <a href="#" class="text-sm font-medium hover:opacity-75 transition-opacity"
+                               style="color: var(--medium-green)">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full flex justify-center py-2 px-4 rounded-lg shadow-sm text-sm font-medium transition-all duration-200 hover:-translate-y-0.5"
+                            style="background: linear-gradient(to right, var(--forest-green), var(--medium-green)); color: var(--cream)"
+                        >
+                            Sign in
+                        </button>
+                    </form>
+
+                    <p class="text-center text-sm" style="color: var(--medium-green)">
+                        Don't have an account?
+                        <a href="/signup" class="font-medium hover:opacity-75 transition-opacity"
+                           style="color: var(--forest-green)">
+                            Sign up
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>

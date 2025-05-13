@@ -4,13 +4,32 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/APIENG/apieng/internal/routes"
+	"github.com/APIENG/apieng/internal/handlers"
 )
 
 func main() {
+	mux := http.NewServeMux()
 
-	router := routes.SetupRouter()
+	// Serve static files
+	fs := http.FileServer(http.Dir("static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	log.Println("Server is running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	// Routes
+	mux.HandleFunc("/", handlers.LandingHandler)
+	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Received request for /metrics with method: %s", r.Method)
+		handlers.MetricsHandler(w, r)
+	})
+
+	// Add dashboard route
+	mux.HandleFunc("/dashboard", handlers.DashboardHandler)
+
+	// Add login and signup routes
+	mux.HandleFunc("/login", handlers.LoginHandler)
+	mux.HandleFunc("/signup", handlers.SignUpHandler)
+
+	log.Println("Server starting on :8080")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal(err)
+	}
 }

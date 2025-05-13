@@ -3,117 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Energy Consumption Metrics</title>
+    <title>APIENG - API Metrics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        #response {
-            display: none;
-            width: 70%;
-            height: 140px;
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+            --white: #FFFFFF;
         }
-        #copy {
+        * {
+            font-family: 'Instrument Sans', sans-serif;
+        }
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(133, 169, 71, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(18, 53, 36, 0.1);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+        #response {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(133, 169, 71, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-family: 'Instrument Sans', monospace;
+            color: var(--forest-green);
             display: none;
+            width: 100%;
+            height: 140px;
+            margin-top: 1rem;
+            resize: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .copy-button {
+            display: none;
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
+            color: var(--cream);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .copy-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--cream);
+        }
+        .input-focus {
+            transition: all 0.2s ease;
+        }
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(62, 123, 39, 0.1);
+            border-color: var(--medium-green);
+        }
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        .table-row:hover {
+            background-color: rgba(233, 238, 217, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
+            color: var(--cream);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-gray-50">
+    <!-- Dashboard Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 h-full flex flex-col shadow-lg" style="background-color: #123524; color: #E9EED9;">
+            <!-- Logo Section -->
+            <div class="p-6">
+                <h1 class="text-2xl font-bold tracking-wider">API Metrics</h1>
+            </div>
 
-<div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">API Energy Consumption Metrics</h1>
+            <!-- Main Navigation -->
+            <nav class="flex-1 px-4 py-2">
+                <div class="mb-6">
+                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Main</p>
+                    <div class="space-y-1">
+                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Metrics
+                        </a>
+                    </div>
+                </div>
 
-    <form action="/measure" method="POST" class="mb-4">
-        <div class="flex items-center">
-            <input type="text" name="apiEndpoint" placeholder="Enter API Endpoint"
-                   class="p-2 border border-gray-300 rounded-md w-full" required>
-            <button type="submit" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md">Measure</button>
-        </div>
-    </form>
+                <!-- API Management -->
+                <div class="mb-6">
+                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">API Management</p>
+                    <div class="space-y-1">
+                        <a href="/endpoints" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Endpoints
+                        </a>
+                        <a href="/api-keys" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                            </svg>
+                            API Keys
+                        </a>
+                    </div>
+                </div>
+            </nav>
 
-    <table class="min-w-full bg-white shadow-md rounded-lg">
-        <thead>
-            <tr>
-                <th class="px-4 py-2 border">API Endpoint</th>
-                <th class="px-4 py-2 border">Request Size (bytes)</th>
-                <th class="px-4 py-2 border">Response Size (bytes)</th>
-                <th class="px-4 py-2 border">Response Time (ms)</th>
-                <th class="px-4 py-2 border">Timestamp</th>
-                <th class="px-4 py-2 border">Energy Consumption (Joules)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range .Metrics}}
-            <tr>
-                <td class="px-4 py-2 border">{{.APIEndpoint}}</td>
-                <td class="px-4 py-2 border">{{.RequestSize}}</td>
-                <td class="px-4 py-2 border">{{.ResponseSize}}</td>
-                <td class="px-4 py-2 border">{{.ResponseTime.Milliseconds}}</td>
-                <td class="px-4 py-2 border">{{.Timestamp}}</td>
-                <td class="px-4 py-2 border">{{.EnergyConsumption}}</td>
-            </tr>
-            {{else}}
-            <tr>
-                <td colspan="6" class="px-4 py-2 border text-center">No metrics available</td>
-            </tr>
-            {{end}}
-        </tbody>
-    </table>
+            <!-- Bottom Section -->
+            <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
+                <a href="/settings" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Settings
+                </a>
+                <a href="/logout" class="flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
 
-        <div class="flex items-center">
-            <button type="submit" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md" onclick="fetchData()">Generate Key</button>
-        </div>
-        <textarea id="response" class="sty"></textarea>
-        <button type="submit" id="copy" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md" onclick="copyToClipboard()">Copy to clipboard</button>
-    
-</div>
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <!-- Top Navigation -->
+            <header class="glass-effect sticky top-0 z-10">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div>
+                        <h2 class="text-xl font-semibold" style="color: var(--forest-green)">API Metrics</h2>
+                        <p class="text-sm text-gray-600 mt-1">Monitor and analyze your API performance</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="fetchData()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+                            Generate API Key
+                        </button>
+                    </div>
+                </div>
+            </header>
 
+            <!-- Metrics Content -->
+            <div class="p-6 space-y-6">
+                <!-- API Endpoint Input -->
+                <div class="dashboard-card p-6 rounded-xl">
+                    <form action="/measure" method="POST" class="space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1 relative">
+                                <input type="text" 
+                                       name="apiEndpoint" 
+                                       placeholder="Enter API Endpoint URL"
+                                       class="input-focus w-full px-4 py-2 rounded-lg text-sm"
+                                       style="border: 1px solid var(--sage); color: var(--forest-green)"
+                                       required>
+                                <div class="absolute right-3 top-2.5">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary px-6 py-2 rounded-lg text-sm font-medium">
+                                Measure
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
- <script> async function fetchData() {
-    try {
-        const apiUrl = 'http://localhost:8080/generate';
+                <!-- API Key Response -->
+                <div class="space-y-3">
+                    <textarea id="response" readonly></textarea>
+                    <button id="copy" 
+                            onclick="copyToClipboard()" 
+                            class="copy-button px-4 py-2 rounded-lg text-sm font-medium">
+                        Copy API Key
+                    </button>
+                </div>
 
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+                <!-- Metrics Table -->
+                <div class="dashboard-card rounded-xl overflow-hidden">
+                    <div class="p-6 border-b flex items-center justify-between" style="border-color: var(--sage)">
+                        <h3 class="text-sm font-medium" style="color: var(--medium-green)">API Metrics History</h3>
+                        <div class="flex items-center space-x-4">
+                            <div class="relative">
+                                <input type="text" placeholder="Search..." class="input-focus pl-8 pr-4 py-2 text-sm border rounded-lg">
+                                <svg class="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr style="background-color: var(--sage)">
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">API Endpoint</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Request Size</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Response Size</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Response Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Energy Used</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{range .Metrics}}
+                                <tr class="table-row border-t" style="border-color: var(--sage)">
+                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.APIEndpoint}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.RequestSize}} bytes</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.ResponseSize}} bytes</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.ResponseTime.Milliseconds}}ms</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.EnergyConsumption}} J</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--forest-green)">{{.Timestamp}}</td>
+                                </tr>
+                                {{else}}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-sm text-center" style="color: var(--medium-green)">No metrics available</td>
+                                </tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 py-4 border-t flex items-center justify-between" style="border-color: var(--sage)">
+                        <div class="text-sm text-gray-600">
+                            Showing 1-10 of 100 results
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-50">Previous</button>
+                            <button class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-50">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const apiUrl = 'http://localhost:8080/generate';
+        
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error(`An error occurred: ${response.statusText}`);
+                }
+        
+                const data = await response.json();
+                console.log('Data:', data);
+                const responseElement = document.getElementById('response');
+                responseElement.style.display = 'block';
+                let value = JSON.stringify(data, null, 2);
+                value = value.slice(1);
+                value = value.slice(0, -1);
+                responseElement.innerHTML = value;
+                const ele = document.getElementById('copy');
+                copy.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                const responseElement = document.getElementById('response');
+                responseElement.textContent = 'Failed to fetch data.';
             }
-        });
-        if (!response.ok) {
-            throw new Error(`An error occurred: ${response.statusText}`);
         }
 
-        const data = await response.json();
-        console.log('Data:', data);
-        const responseElement = document.getElementById('response');
-        responseElement.style.display= 'block';
-        let value = JSON.stringify(data, null, 2);
-        value = value.slice(1);
-        value = value.slice(0, -1);
-        responseElement.innerHTML = value;
-        const ele= document.getElementById('copy');
-        copy.style.display = 'block';
-    } catch (error) {
-        // Handle errors
-        console.error('Error fetching data:', error);
-        const responseElement = document.getElementById('response');
-        responseElement.textContent = 'Failed to fetch data.';
-    }
-}
-function copyToClipboard() {
-    const element = document.getElementById("response");
-    const text = element.textContent || element.innerText;
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-
-    document.body.removeChild(textarea);
-
-    alert('Text copied to clipboard!');
-}
-
-
-</script>
-
+        function copyToClipboard() {
+            const element = document.getElementById("response");
+            const text = element.textContent || element.innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+        
+            document.body.removeChild(textarea);
+        
+            alert('Text copied to clipboard!');
+        }
+    </script>
 </body>
 </html>

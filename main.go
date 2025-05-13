@@ -7,13 +7,31 @@ import (
 	"net/http"
 	"text/template"
 	"time"
+	// _ "github.com/lib/pq"
 )
 
-// MetricsTemplateData represents the data to be passed to the HTML template.
+type Metrics struct {
+	APIEndpoint       string
+	RequestSize       int64
+	ResponseSize      int64
+	ResponseTime      time.Duration
+	Timestamp         time.Time
+	EnergyConsumption float64
+}
+
 type MetricsTemplateData struct {
 	Metrics []Metrics
 }
 
+func InitializeDB() (*sql.DB, error) {
+	db, err := sql.Open("postgres", "postgres://username:password@localhost:5432/dbname?sslmode=disable")
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+
+// func FetchMetrics(db *sql.DB) ([]Metrics, error) {
 func FetchMetrics(db *sql.DB) ([]Metrics, error) {
 	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption FROM metrics`)
 	if err != nil {
@@ -99,6 +117,29 @@ func measureHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/metrics", http.StatusSeeOther)
 }
 
+// MeasureAPI performs API measurements and returns metrics
+func MeasureAPI(apiEndpoint string) Metrics {
+	start := time.Now()
+	resp, err := http.Get(apiEndpoint)
+	if err != nil {
+		return Metrics{APIEndpoint: apiEndpoint}
+	}
+	defer resp.Body.Close()
+
+	responseTime := time.Since(start)
+	// Simplified energy consumption calculation
+	energyConsumption := float64(responseTime.Milliseconds()) * 0.001
+
+	return Metrics{
+		APIEndpoint:       apiEndpoint,
+		RequestSize:       resp.Request.ContentLength,
+		ResponseSize:      resp.ContentLength,
+		ResponseTime:      responseTime,
+		Timestamp:         time.Now(),
+		EnergyConsumption: energyConsumption,
+	}
+}
+
 // API handler to return metrics in JSON format
 func apiMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := InitializeDB()
@@ -119,6 +160,15 @@ func apiMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
 	}
+}
+
+// StoreMetrics stores the metrics data in the database
+func StoreMetrics(db *sql.DB, m Metrics) error {
+	_, err := db.Exec(`
+		INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption)
+		VALUES ($1, $2, $3, $4, $5, $6)`,
+		m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption)
+	return err
 }
 
 func main() {
