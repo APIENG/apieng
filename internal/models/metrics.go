@@ -15,4 +15,5 @@ type Metrics struct {
 	ResponseTime      time.Duration
 	Timestamp         time.Time
 	EnergyConsumption float64
+	Explanation       string
 }

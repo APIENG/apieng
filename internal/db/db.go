@@ -27,7 +27,8 @@ func InitializeDB() (*sql.DB, error) {
 		method TEXT DEFAULT 'GET',
 		status INTEGER DEFAULT 200,
 		timestamp DATETIME,
-		energy_consumption REAL
+		energy_consumption REAL,
+		explanation TEXT
 	);`
 
 	createTableQuery1 := `
@@ -61,10 +62,10 @@ func StoreMetrics(db *sql.DB, m models.Metrics) error {
 	}
 
 	insertQuery := `
-	INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id, method, status)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`
+	INSERT INTO metrics (api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id, method, status, explanation)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`
 
-	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption, m.UserId, m.Method, m.Status)
+	_, err := db.Exec(insertQuery, m.APIEndpoint, m.RequestSize, m.ResponseSize, m.ResponseTime.Milliseconds(), m.Timestamp, m.EnergyConsumption, m.UserId, m.Method, m.Status, m.Explanation)
 	if err != nil {
 		return err
 	}

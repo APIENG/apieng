@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"text/template"
 	"time"
@@ -20,8 +19,12 @@ type MetricsTemplateData struct {
 	Metrics []models.Metrics
 }
 
+type RequestBody struct {
+	APIEndpoint string `json:"apiEndpoint"`
+}
+
 func FetchMetrics(db *sql.DB, UserId string) ([]models.Metrics, error) {
-	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id, status, method FROM metrics WHERE user_id = ?`, UserId)
+	rows, err := db.Query(`SELECT api_endpoint, request_size, response_size, response_time, timestamp, energy_consumption, user_id, status, method, explanation FROM metrics WHERE user_id = ?`, UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +34,7 @@ func FetchMetrics(db *sql.DB, UserId string) ([]models.Metrics, error) {
 	for rows.Next() {
 		var m models.Metrics
 		var responseTime int64
-		err := rows.Scan(&m.APIEndpoint, &m.RequestSize, &m.ResponseSize, &responseTime, &m.Timestamp, &m.EnergyConsumption, &m.UserId, &m.Status, &m.Method)
+		err := rows.Scan(&m.APIEndpoint, &m.RequestSize, &m.ResponseSize, &responseTime, &m.Timestamp, &m.EnergyConsumption, &m.UserId, &m.Status, &m.Method, &m.Explanation)
 		if err != nil {
 			return nil, err
 		}
@@ -100,8 +103,9 @@ func MeasureHandler(w http.ResponseWriter, r *http.Request) {
 	// strToken, _ := token.(string)
 	cookie, _ := r.Cookie("user_id")
 
-	log.Printf("cookie value iss %s", cookie.Value)
-	metrics := services.MeasureAPI(apiEndpoint, cookie.Value)
+	//log.Printf("cookie value iss %s", cookie.Value)
+	metrics := services.MeasureAPIWithAI(apiEndpoint, cookie.Value)
+	// metrics := services.MeasureAPI(apiEndpoint, cookie.Value)
 	err = db.StoreMetrics(dr, metrics)
 	if err != nil {
 		http.Error(w, "Error storing metrics", http.StatusInternalServerError)
@@ -118,7 +122,18 @@ func ApiMeasureHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apiEndpoint := r.FormValue("apiEndpoint")
+	var reqBody RequestBody
+
+	// Decode the JSON body into struct
+	err := json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	apiEndpoint := reqBody.APIEndpoint
+
+	// apiEndpoint := r.FormValue("apiEndpoint")
 	if apiEndpoint == "" {
 		http.Error(w, "API endpoint is required", http.StatusBadRequest)
 		return
@@ -134,7 +149,8 @@ func ApiMeasureHandler(w http.ResponseWriter, r *http.Request) {
 
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
-	metrics := services.MeasureAPI(apiEndpoint, strToken)
+	metrics := services.MeasureAPIWithAI(apiEndpoint, strToken)
+	//metrics := services.MeasureAPI(apiEndpoint, strToken)
 	err = db.StoreMetrics(dr, metrics)
 	if err != nil {
 		http.Error(w, "Error storing metrics", http.StatusInternalServerError)
