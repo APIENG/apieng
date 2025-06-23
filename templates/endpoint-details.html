@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIENG - Endpoint Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+            --white: #FFFFFF;
+        }
+        * {
+            font-family: 'Instrument Sans', sans-serif;
+        }
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(133, 169, 71, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(18, 53, 36, 0.1);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
+            color: var(--cream);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .metric-circle {
+            background: conic-gradient(var(--light-green) 0deg, var(--light-green) 72deg, #e5e7eb 72deg, #e5e7eb 360deg);
+            border-radius: 50%;
+        }
+        .status-excellent { color: #10b981; }
+        .status-good { color: var(--medium-green); }
+        .status-warning { color: #f59e0b; }
+        .status-poor { color: #ef4444; }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 h-full flex flex-col shadow-lg" style="background-color: #123524; color: #E9EED9;">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold tracking-wider">API Metrics</h1>
+            </div>
+            <nav class="flex-1 px-4 py-2">
+                <div class="mb-6">
+                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Main</p>
+                    <div class="space-y-1">
+                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                            Dashboard
+                        </a>
+                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Metrics
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
+                <a href="/logout" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="glass-effect sticky top-0 z-10">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center space-x-4">
+                        <a href="/metrics" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </a>
+                        <div>
+                            <h2 class="text-xl font-semibold" style="color: var(--forest-green)">Endpoint Analysis</h2>
+                            <p class="text-sm text-gray-600 mt-1 max-w-md truncate">{{.Metric.APIEndpoint}}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button class="px-4 py-2 rounded-lg text-sm font-medium border hover:bg-gray-50" style="color: var(--forest-green); border-color: var(--sage)">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                            </svg>
+                            Re-measure
+                        </button>
+                        <button class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+                            Export Report
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="p-6 space-y-6">
+                <!-- Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Response Time -->
+                    <div class="dashboard-card p-6 rounded-xl text-center">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 metric-circle flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Response Time</h3>
+                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{.Metric.ResponseTime.Milliseconds}}ms</p>
+                        <div class="mt-2">
+                            {{if lt .Metric.ResponseTime.Milliseconds 200}}
+                                <span class="status-excellent text-xs font-medium">Excellent</span>
+                            {{else if lt .Metric.ResponseTime.Milliseconds 500}}
+                                <span class="status-good text-xs font-medium">Good</span>
+                            {{else}}
+                                <span class="status-warning text-xs font-medium">Needs Optimization</span>
+                            {{end}}
+                        </div>
+                    </div>
+
+                    <!-- Energy Usage -->
+                    <div class="dashboard-card p-6 rounded-xl text-center">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 metric-circle flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Energy Usage</h3>
+                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{printf "%.1f" .Metric.EnergyConsumption}}J</p>
+                        <div class="mt-2">
+                            {{if lt .Metric.EnergyConsumption 10.0}}
+                                <span class="status-excellent text-xs font-medium">Low Impact</span>
+                            {{else if lt .Metric.EnergyConsumption 30.0}}
+                                <span class="status-good text-xs font-medium">Medium Impact</span>
+                            {{else}}
+                                <span class="status-warning text-xs font-medium">High Impact</span>
+                            {{end}}
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="dashboard-card p-6 rounded-xl text-center">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 metric-circle flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                                    {{if eq .Metric.Status 200}}
+                                        <div class="w-4 h-4 bg-green-500 rounded-full pulse-dot"></div>
+                                    {{else}}
+                                        <div class="w-4 h-4 bg-red-500 rounded-full"></div>
+                                    {{end}}
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Status</h3>
+                        <p class="text-2xl font-bold {{if eq .Metric.Status 200}}status-excellent{{else}}status-poor{{end}}">{{.Metric.Status}}</p>
+                        <div class="mt-2">
+                            <span class="text-xs font-medium {{if eq .Metric.Status 200}}status-excellent{{else}}status-poor{{end}}">
+                                {{if eq .Metric.Status 200}}Healthy{{else}}Error{{end}}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Data Transfer -->
+                    <div class="dashboard-card p-6 rounded-xl text-center">
+                        <div class="flex items-center justify-center mb-4">
+                            <div class="w-16 h-16 metric-circle flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6" style="color: var(--forest-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Data Transfer</h3>
+                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{add .Metric.RequestSize .Metric.ResponseSize}}B</p>
+                        <div class="mt-2">
+                            <span class="text-xs font-medium status-good">Total Size</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Information -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Main Details -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Endpoint Information -->
+                        <div class="dashboard-card p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold mb-4" style="color: var(--forest-green)">Endpoint Details</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 rounded-lg" style="background-color: var(--sage)">
+                                    <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">API Endpoint</label>
+                                    <p class="mt-2 text-sm font-mono break-all" style="color: var(--forest-green)">{{.Metric.APIEndpoint}}</p>
+                                </div>
+                                <div class="p-4 rounded-lg" style="background-color: var(--sage)">
+                                    <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">Method</label>
+                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Metric.Method}}</p>
+                                </div>
+                                <div class="p-4 rounded-lg" style="background-color: var(--sage)">
+                                    <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">Request Size</label>
+                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Metric.RequestSize}} bytes</p>
+                                </div>
+                                <div class="p-4 rounded-lg" style="background-color: var(--sage)">
+                                    <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">Response Size</label>
+                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Metric.ResponseSize}} bytes</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Analysis -->
+                        <div class="dashboard-card p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold mb-4" style="color: var(--forest-green)">Performance Analysis</h3>
+                            <div class="space-y-4">
+                                <!-- Response Time Analysis -->
+                                <div class="p-4 rounded-lg border-l-4" style="background-color: var(--sage); border-color: var(--light-green)">
+                                    <h4 class="font-medium mb-2" style="color: var(--forest-green)">Response Time</h4>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                                        <div class="h-2 rounded-full" style="background-color: var(--light-green); width: {{if lt .Metric.ResponseTime.Milliseconds 200}}80%{{else if lt .Metric.ResponseTime.Milliseconds 500}}60%{{else}}30%{{end}}"></div>
+                                    </div>
+                                    <p class="text-sm" style="color: var(--medium-green)">
+                                        {{if lt .Metric.ResponseTime.Milliseconds 200}}
+                                            Excellent performance! Your API responds very quickly.
+                                        {{else if lt .Metric.ResponseTime.Milliseconds 500}}
+                                            Good response time. Consider caching for optimization.
+                                        {{else}}
+                                            Response time could be improved. Consider optimization.
+                                        {{end}}
+                                    </p>
+                                </div>
+
+                                <!-- Energy Efficiency -->
+                                <div class="p-4 rounded-lg border-l-4" style="background-color: var(--sage); border-color: var(--medium-green)">
+                                    <h4 class="font-medium mb-2" style="color: var(--forest-green)">Energy Efficiency</h4>
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                                        <div class="h-2 rounded-full" style="background-color: var(--medium-green); width: {{if lt .Metric.EnergyConsumption 10.0}}20%{{else if lt .Metric.EnergyConsumption 30.0}}50%{{else}}80%{{end}}"></div>
+                                    </div>
+                                    <p class="text-sm" style="color: var(--medium-green)">
+                                        {{if lt .Metric.EnergyConsumption 10.0}}
+                                            Excellent energy efficiency! Environmentally friendly.
+                                        {{else if lt .Metric.EnergyConsumption 30.0}}
+                                            Moderate energy usage. Room for optimization.
+                                        {{else}}
+                                            High energy consumption. Consider optimization.
+                                        {{end}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-6">
+                        <!-- Quick Stats -->
+                        <div class="dashboard-card p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold mb-4" style="color: var(--forest-green)">Quick Stats</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm" style="color: var(--medium-green)">User ID:</span>
+                                    <span class="text-xs font-mono" style="color: var(--forest-green)">{{substr .Metric.UserId 0 8}}...</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm" style="color: var(--medium-green)">Total Transfer:</span>
+                                    <span class="text-sm font-semibold" style="color: var(--forest-green)">{{add .Metric.RequestSize .Metric.ResponseSize}} B</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm" style="color: var(--medium-green)">Measured At:</span>
+                                    <span class="text-xs" style="color: var(--forest-green)">{{.Metric.Timestamp.Format "Jan 2, 15:04"}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Insights -->
+                        <div class="dashboard-card p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold mb-4" style="color: var(--forest-green)">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                AI Insights
+                            </h3>
+                            <div class="p-4 rounded-lg" style="background-color: var(--sage)">
+                                {{if .Metric.Explanation}}
+                                    <p class="text-sm leading-relaxed" style="color: var(--forest-green)">{{.Metric.Explanation}}</p>
+                                {{else}}
+                                    <p class="text-sm leading-relaxed" style="color: var(--medium-green)">
+                                        Based on your API metrics, performance looks good. Consider implementing monitoring for sustained tracking.
+                                    </p>
+                                {{end}}
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="dashboard-card p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold mb-4" style="color: var(--forest-green)">Actions</h3>
+                            <div class="space-y-3">
+                                <button class="w-full px-4 py-2 rounded-lg text-sm font-medium border hover:bg-gray-50" style="color: var(--forest-green); border-color: var(--sage)">
+                                    Re-measure Endpoint
+                                </button>
+                                <button class="w-full btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+                                    Download Report
+                                </button>
+                                <button class="w-full px-4 py-2 rounded-lg text-sm font-medium border hover:bg-gray-50" style="color: var(--forest-green); border-color: var(--sage)">
+                                    Set Alert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
