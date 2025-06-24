@@ -139,13 +139,13 @@
                 <div class="mb-6">
                     <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">API Management</p>
                     <div class="space-y-1">
-                        <a href="/endpoints" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                        <a href="#" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                             Endpoints
                         </a>
-                        <a href="/api-keys" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                        <a href="#" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                             </svg>
@@ -157,7 +157,7 @@
 
             <!-- Bottom Section -->
             <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
-                <a href="/settings" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                <a href="#" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -408,6 +408,7 @@ function showMeasurementModal(data) {
     document.getElementById('modal-request-size').textContent = data.RequestSize ? `${data.RequestSize} bytes` : '-';
     document.getElementById('modal-response-size').textContent = data.ResponseSize ? `${data.ResponseSize} bytes` : '-';
     document.getElementById('modal-energy').textContent = data.EnergyConsumption ? `${data.EnergyConsumption} J` : '-';
+    document.getElementById('modal-insight').textContent = data.Explanation ? `${data.Explanation}` : 'No additional insights available for this measurement.';
     document.getElementById('modal-timestamp').textContent = data.Timestamp || '-';
     
     // Handle explanation
@@ -447,7 +448,7 @@ document.addEventListener('click', function(event) {
 
 function downloadCSV() {
     const link = document.createElement("a");
-    link.href = "/metrics/export"; // your backend route
+    link.href = "/metrics/export/download"; // your backend route
     link.download = "metrics.csv"; // this hints the filename
     document.body.appendChild(link);
     link.click();
@@ -457,7 +458,7 @@ function downloadCSV() {
 
     <!-- Measurement Results Modal -->
 <div id="measurementModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl p-6 w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-xl p-6 w-full max-w-3xl mx-4 max-h-[70vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-xl font-semibold" style="color: var(--forest-green)">API Measurement Results</h3>
             <button onclick="closeMeasurementModal()" class="text-gray-400 hover:text-gray-600">
@@ -528,7 +529,7 @@ function downloadCSV() {
                     Analysis & Insights
                 </h4>
                 <div id="modal-explanation" class="text-sm leading-relaxed p-3 rounded-lg" style="background-color: var(--sage); color: var(--forest-green)">
-                    <p class="text-center text-gray-500">No additional insights available for this measurement.</p>
+                    <p  id="modal-insight" class="text-center text-gray-500">No additional insights available for this measurement.</p>
                 </div>
             </div>
 

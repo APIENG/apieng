@@ -43,7 +43,7 @@ func FetchMetrics(db *sql.DB, UserId string) ([]models.Metrics, error) {
 			return nil, err
 		}
 		m.ResponseTime = time.Duration(responseTime) * time.Millisecond
-		fmt.Printf("Metric: %+v\n", m)
+		//fmt.Printf("Metric: %+v\n", m)
 		metricsList = append(metricsList, m)
 	}
 
@@ -145,7 +145,7 @@ func EachMetricsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Fetched metrics for ID %s: %+v\n", id, metrics)
+	//fmt.Printf("Fetched metrics for ID %s: %+v\n", id, metrics)
 
 	tmpl, err := template.ParseFiles("templates/each_metric.html")
 	if err != nil {
@@ -209,6 +209,54 @@ func ExportMetricsCSVHandler(w http.ResponseWriter, r *http.Request) {
 			m.Explanation,
 		})
 	}
+}
+
+// Handler to process csv endpoint for a particular Endpoint
+func EachExportMetricsCSVHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := db.InitializeDB()
+	if err != nil {
+		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	token := context.Get(r, "user")
+	strToken, _ := token.(string)
+
+	metric, err := FetchMetricsByID(db, strToken, id)
+	if err != nil {
+		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Disposition", "attachment;filename=metrics.csv")
+	w.Header().Set("Content-Type", "text/csv")
+
+	writer := csv.NewWriter(w)
+	defer writer.Flush()
+
+	writer.Write([]string{
+		"ID", "APIEndpoint", "UserId", "Method", "Status",
+		"RequestSize", "ResponseSize", "ResponseTime (ms)", "Timestamp", "EnergyConsumption", "Explanation",
+	})
+
+	writer.Write([]string{
+		strconv.Itoa(metric.ID),
+		metric.APIEndpoint,
+		metric.UserId,
+		metric.Method,
+		strconv.Itoa(metric.Status),
+		strconv.Itoa(metric.RequestSize),
+		strconv.Itoa(metric.ResponseSize),
+		strconv.FormatInt(metric.ResponseTime.Milliseconds(), 10),
+		metric.Timestamp.Format(time.RFC3339),
+		fmt.Sprintf("%.4f", metric.EnergyConsumption),
+		metric.Explanation,
+	})
+
 }
 
 // Handler to process API endpoint form submission and measure API metrics
