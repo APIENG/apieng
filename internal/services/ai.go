@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/APIENG/apieng/internal/models"
+	"github.com/joho/godotenv"
 )
 
 // MeasureAPI collects metrics for a given API endpoint and estimates energy consumption.
@@ -60,6 +61,11 @@ func MeasureAPIWithAI(endpoint string, user string) models.Metrics {
 }
 
 func callGeminiAPI(requestSize, responseSize int, responseTime float64) (string, error) {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Warning: .env file not found, relying on system env")
+	}
+
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
 		return "", fmt.Errorf("GEMINI_API_KEY is not set")

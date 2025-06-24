@@ -43,7 +43,7 @@
             opacity: 0.9;
             transform: translateY(-1px);
         }
-        .metric-circle {
+        -circle {
             background: conic-gradient(var(--light-green) 0deg, var(--light-green) 72deg, #e5e7eb 72deg, #e5e7eb 360deg);
             border-radius: 50%;
         }
@@ -109,7 +109,7 @@
                         </a>
                         <div>
                             <h2 class="text-xl font-semibold" style="color: var(--forest-green)">Endpoint Analysis</h2>
-                            <p class="text-sm text-gray-600 mt-1 max-w-md truncate">{{.Metric.APIEndpoint}}</p>
+                            <p class="text-sm text-gray-600 mt-1 max-w-md truncate">{{.APIEndpoint}}</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -142,11 +142,11 @@
                             </div>
                         </div>
                         <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Response Time</h3>
-                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{.Metric.ResponseTime.Milliseconds}}ms</p>
+                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{.ResponseTime.Milliseconds}}ms</p>
                         <div class="mt-2">
-                            {{if lt .Metric.ResponseTime.Milliseconds 200}}
+                            {{if lt .ResponseTime.Milliseconds 200}}
                                 <span class="status-excellent text-xs font-medium">Excellent</span>
-                            {{else if lt .Metric.ResponseTime.Milliseconds 500}}
+                            {{else if lt .ResponseTime.Milliseconds 500}}
                                 <span class="status-good text-xs font-medium">Good</span>
                             {{else}}
                                 <span class="status-warning text-xs font-medium">Needs Optimization</span>
@@ -166,11 +166,11 @@
                             </div>
                         </div>
                         <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Energy Usage</h3>
-                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{printf "%.1f" .Metric.EnergyConsumption}}J</p>
+                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{printf "%.1f" .EnergyConsumption}}J</p>
                         <div class="mt-2">
-                            {{if lt .Metric.EnergyConsumption 10.0}}
+                            {{if lt .EnergyConsumption 10.0}}
                                 <span class="status-excellent text-xs font-medium">Low Impact</span>
-                            {{else if lt .Metric.EnergyConsumption 30.0}}
+                            {{else if lt .EnergyConsumption 30.0}}
                                 <span class="status-good text-xs font-medium">Medium Impact</span>
                             {{else}}
                                 <span class="status-warning text-xs font-medium">High Impact</span>
@@ -183,7 +183,7 @@
                         <div class="flex items-center justify-center mb-4">
                             <div class="w-16 h-16 metric-circle flex items-center justify-center">
                                 <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                                    {{if eq .Metric.Status 200}}
+                                    {{if eq .Status 200}}
                                         <div class="w-4 h-4 bg-green-500 rounded-full pulse-dot"></div>
                                     {{else}}
                                         <div class="w-4 h-4 bg-red-500 rounded-full"></div>
@@ -192,10 +192,10 @@
                             </div>
                         </div>
                         <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Status</h3>
-                        <p class="text-2xl font-bold {{if eq .Metric.Status 200}}status-excellent{{else}}status-poor{{end}}">{{.Metric.Status}}</p>
+                        <p class="text-2xl font-bold {{if eq .Status 200}}status-excellent{{else}}status-poor{{end}}">{{.Status}}</p>
                         <div class="mt-2">
-                            <span class="text-xs font-medium {{if eq .Metric.Status 200}}status-excellent{{else}}status-poor{{end}}">
-                                {{if eq .Metric.Status 200}}Healthy{{else}}Error{{end}}
+                            <span class="text-xs font-medium {{if eq .Status 200}}status-excellent{{else}}status-poor{{end}}">
+                                {{if eq .Status 200}}Healthy{{else}}Error{{end}}
                             </span>
                         </div>
                     </div>
@@ -212,7 +212,8 @@
                             </div>
                         </div>
                         <h3 class="text-xs font-medium uppercase tracking-wide mb-2" style="color: var(--medium-green)">Data Transfer</h3>
-                        <p class="text-2xl font-bold" style="color: var(--forest-green)">{{add .Metric.RequestSize .Metric.ResponseSize}}B</p>
+                        <p class="text-2xl font-bold" style="color: var(--forest-green)">Request size: {{.ResponseSize}}
+                                        Response Size: {{.ResponseSize}} B</p>
                         <div class="mt-2">
                             <span class="text-xs font-medium status-good">Total Size</span>
                         </div>
@@ -229,19 +230,19 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="p-4 rounded-lg" style="background-color: var(--sage)">
                                     <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">API Endpoint</label>
-                                    <p class="mt-2 text-sm font-mono break-all" style="color: var(--forest-green)">{{.Metric.APIEndpoint}}</p>
+                                    <p class="mt-2 text-sm font-mono break-all" style="color: var(--forest-green)">{{.APIEndpoint}}</p>
                                 </div>
                                 <div class="p-4 rounded-lg" style="background-color: var(--sage)">
                                     <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">Method</label>
-                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Metric.Method}}</p>
+                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Method}}</p>
                                 </div>
                                 <div class="p-4 rounded-lg" style="background-color: var(--sage)">
                                     <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">Request Size</label>
-                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Metric.RequestSize}} bytes</p>
+                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.RequestSize}} bytes</p>
                                 </div>
                                 <div class="p-4 rounded-lg" style="background-color: var(--sage)">
                                     <label class="text-xs font-medium uppercase tracking-wide" style="color: var(--medium-green)">Response Size</label>
-                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.Metric.ResponseSize}} bytes</p>
+                                    <p class="mt-2 text-sm font-semibold" style="color: var(--forest-green)">{{.ResponseSize}} bytes</p>
                                 </div>
                             </div>
                         </div>
@@ -254,12 +255,12 @@
                                 <div class="p-4 rounded-lg border-l-4" style="background-color: var(--sage); border-color: var(--light-green)">
                                     <h4 class="font-medium mb-2" style="color: var(--forest-green)">Response Time</h4>
                                     <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                                        <div class="h-2 rounded-full" style="background-color: var(--light-green); width: {{if lt .Metric.ResponseTime.Milliseconds 200}}80%{{else if lt .Metric.ResponseTime.Milliseconds 500}}60%{{else}}30%{{end}}"></div>
+                                        <div class="h-2 rounded-full" style="background-color: var(--light-green); width: {{if lt .ResponseTime.Milliseconds 200}}80%{{else if lt .ResponseTime.Milliseconds 500}}60%{{else}}30%{{end}}"></div>
                                     </div>
                                     <p class="text-sm" style="color: var(--medium-green)">
-                                        {{if lt .Metric.ResponseTime.Milliseconds 200}}
+                                        {{if lt .ResponseTime.Milliseconds 200}}
                                             Excellent performance! Your API responds very quickly.
-                                        {{else if lt .Metric.ResponseTime.Milliseconds 500}}
+                                        {{else if lt .ResponseTime.Milliseconds 500}}
                                             Good response time. Consider caching for optimization.
                                         {{else}}
                                             Response time could be improved. Consider optimization.
@@ -271,12 +272,12 @@
                                 <div class="p-4 rounded-lg border-l-4" style="background-color: var(--sage); border-color: var(--medium-green)">
                                     <h4 class="font-medium mb-2" style="color: var(--forest-green)">Energy Efficiency</h4>
                                     <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
-                                        <div class="h-2 rounded-full" style="background-color: var(--medium-green); width: {{if lt .Metric.EnergyConsumption 10.0}}20%{{else if lt .Metric.EnergyConsumption 30.0}}50%{{else}}80%{{end}}"></div>
+                                        <div class="h-2 rounded-full" style="background-color: var(--medium-green); width: {{if lt .EnergyConsumption 10.0}}20%{{else if lt .EnergyConsumption 30.0}}50%{{else}}80%{{end}}"></div>
                                     </div>
                                     <p class="text-sm" style="color: var(--medium-green)">
-                                        {{if lt .Metric.EnergyConsumption 10.0}}
+                                        {{if lt .EnergyConsumption 10.0}}
                                             Excellent energy efficiency! Environmentally friendly.
-                                        {{else if lt .Metric.EnergyConsumption 30.0}}
+                                        {{else if lt .EnergyConsumption 30.0}}
                                             Moderate energy usage. Room for optimization.
                                         {{else}}
                                             High energy consumption. Consider optimization.
@@ -295,15 +296,16 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm" style="color: var(--medium-green)">User ID:</span>
-                                    <span class="text-xs font-mono" style="color: var(--forest-green)">{{substr .Metric.UserId 0 8}}...</span>
+                                    <span class="text-xs font-mono" style="color: var(--forest-green)">{{.UserId}}...</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm" style="color: var(--medium-green)">Total Transfer:</span>
-                                    <span class="text-sm font-semibold" style="color: var(--forest-green)">{{add .Metric.RequestSize .Metric.ResponseSize}} B</span>
+                                    <span class="text-sm font-semibold" style="color: var(--forest-green)">Request size: {{.ResponseSize}}
+                                        Response Size: {{.ResponseSize}} B</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm" style="color: var(--medium-green)">Measured At:</span>
-                                    <span class="text-xs" style="color: var(--forest-green)">{{.Metric.Timestamp.Format "Jan 2, 15:04"}}</span>
+                                    <span class="text-xs" style="color: var(--forest-green)">{{.Timestamp.Format "Jan 2, 15:04"}}</span>
                                 </div>
                             </div>
                         </div>
@@ -317,8 +319,8 @@
                                 AI Insights
                             </h3>
                             <div class="p-4 rounded-lg" style="background-color: var(--sage)">
-                                {{if .Metric.Explanation}}
-                                    <p class="text-sm leading-relaxed" style="color: var(--forest-green)">{{.Metric.Explanation}}</p>
+                                {{if .Explanation}}
+                                    <p class="text-sm leading-relaxed" style="color: var(--forest-green)">{{.Explanation}}</p>
                                 {{else}}
                                     <p class="text-sm leading-relaxed" style="color: var(--medium-green)">
                                         Based on your API metrics, performance looks good. Consider implementing monitoring for sustained tracking.

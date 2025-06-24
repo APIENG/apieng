@@ -26,6 +26,8 @@ func SetupRouter() *mux.Router {
 
 	//Metrics handler
 	router.HandleFunc("/metrics", pkg.AuthorizeCookie(handlers.MetricsHandler)).Methods("GET")
+	router.HandleFunc("/metrics/{id}", pkg.AuthorizeCookie(handlers.EachMetricsHandler)).Methods("GET")
+	router.HandleFunc("/metrics/export/download", pkg.AuthorizeCookie(handlers.ExportMetricsCSVHandler)).Methods("GET")
 	router.HandleFunc("/dashboard", pkg.AuthorizeCookie(handlers.DashboardHandler)).Methods("GET")
 	router.HandleFunc("/api/measure", handlers.AuthorizeAPI(handlers.ApiMeasureHandler)).Methods("POST")
 	router.HandleFunc("/measure", pkg.AuthorizeCookie(handlers.MeasureHandler)).Methods("POST")
