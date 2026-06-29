@@ -17,7 +17,7 @@ func SetupRouter() *mux.Router {
 	router.HandleFunc("/", handlers.LandingHandler).Methods("GET")
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("GET")
 	router.HandleFunc("/signup", handlers.SignUpHandler).Methods("GET")
-	router.HandleFunc("/login", handlers.LoginusersHandler).Methods("POST")
+	router.HandleFunc("/login", pkg.RateLimitLogin(handlers.LoginusersHandler)).Methods("POST")
 	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
 	router.HandleFunc("/users", pkg.AuthorizeCookie(handlers.UsersHandler)).Methods("GET")
 	router.HandleFunc("/generate", pkg.AuthorizeCookie(handlers.GenerateKey)).Methods("POST")

@@ -38,9 +38,11 @@ func MeasureAPIWithAI(endpoint string, user string) models.Metrics {
 	energy := EnergyEstimate(responseTime, cpuUsage)
 
 	// Call Gemini to generate advanced metrics
-	aiMetrics, err := callGeminiAPI(requestSize, responseSize, responseTime.Seconds())
-	if err != nil {
-		fmt.Println("Gemini error:", err)
+	aiMetrics := ""
+	aiErr := callGeminiAPI(requestSize, responseSize, responseTime.Seconds(), &aiMetrics)
+	if aiErr != nil {
+		fmt.Printf("Warning: Gemini API failed: %v - using fallback explanation\n", aiErr)
+		aiMetrics = fmt.Sprintf("Response in %.2f seconds with %d bytes transferred. Unable to generate AI insights at this time.", responseTime.Seconds(), responseSize)
 	}
 
 	metrics := models.Metrics{
@@ -60,7 +62,7 @@ func MeasureAPIWithAI(endpoint string, user string) models.Metrics {
 	return metrics
 }
 
-func callGeminiAPI(requestSize, responseSize int, responseTime float64) (string, error) {
+func callGeminiAPI(requestSize, responseSize int, responseTime float64, result *string) error {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Warning: .env file not found, relying on system env")
@@ -68,24 +70,37 @@ func callGeminiAPI(requestSize, responseSize int, responseTime float64) (string,
 
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		return "", fmt.Errorf("GEMINI_API_KEY is not set")
+		return fmt.Errorf("GEMINI_API_KEY is not set")
 	}
 
-	prompt := fmt.Sprintf(`
-I have API data for an endpoint:
-Request Size: %d bytes
-Response Size: %d bytes
-Response Time: %.2f seconds
+	// Calculate derived metrics (with safe defaults)
+	totalDataKB := float64(requestSize+responseSize) / 1024.0
+	dataRateKBps := 0.0
+	if responseTime > 0 {
+		dataRateKBps = totalDataKB / responseTime
+	}
+	requestResponseRatio := 1.0
+	if requestSize > 0 {
+		requestResponseRatio = float64(responseSize) / float64(requestSize)
+	}
+	responseSizeMB := float64(responseSize) / (1024 * 1024)
 
-Please provide a clear explanation of the following:
+	prompt := fmt.Sprintf(`Analyze this API endpoint's performance:
+- Request: %d bytes
+- Response: %d bytes
+- Duration: %.2f seconds
 
-1. The total data transferred (sum of request and response sizes) in kilobytes.
-2. The data transfer rate in kilobytes per second.
-3. The ratio of request size to response size.
-4. Include any other metric you consider relevant to understanding the endpoint's computational behavior and explain its significance.
+Provide a brief, actionable performance analysis covering:
+1. Overall data efficiency (total %.2f KB transferred in %.2f seconds = %.2f KB/s throughput)
+2. Response size impact (%.2f MB response is %s size relative to request)
+3. Performance assessment: Is this fast, normal, or slow for the response size?
+4. One specific optimization recommendation
 
-Respond only with a plain text explanation. Do not format as JSON or list keys. Just give a concise, well-written paragraph that includes all the information.
-`, requestSize, responseSize, responseTime)
+Keep it concise and practical. Focus on what this means for real-world usage.`,
+		requestSize, responseSize, responseTime,
+		totalDataKB, responseTime, dataRateKBps,
+		responseSizeMB, getResponseSizeAssessment(requestResponseRatio),
+	)
 
 	requestBody := map[string]interface{}{
 		"contents": []map[string]interface{}{
@@ -99,25 +114,25 @@ Respond only with a plain text explanation. Do not format as JSON or list keys. 
 
 	jsonBody, err := json.Marshal(requestBody)
 	if err != nil {
-		return "", fmt.Errorf("error marshaling request: %v", err)
+		return fmt.Errorf("error marshaling request: %v", err)
 	}
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=%s", apiKey), bytes.NewReader(jsonBody))
 	if err != nil {
-		return "", fmt.Errorf("request creation failed: %v", err)
+		return fmt.Errorf("request creation failed: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("request failed: %v", err)
+		return fmt.Errorf("request failed: %v", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("response read failed: %v", err)
+		return fmt.Errorf("response read failed: %v", err)
 	}
 	//fmt.Println("Gemini API Response:\n", string(body))
 
@@ -133,16 +148,27 @@ Respond only with a plain text explanation. Do not format as JSON or list keys. 
 	}
 	err = json.Unmarshal(body, &responseBody)
 	if err != nil {
-		return "", fmt.Errorf("response unmarshal failed: %v", err)
+		return fmt.Errorf("response unmarshal failed: %v", err)
 	}
 
 	if len(responseBody.Candidates) == 0 || len(responseBody.Candidates[0].Content.Parts) == 0 {
-		return "", fmt.Errorf("no valid candidates in Gemini response")
+		return fmt.Errorf("no valid candidates in Gemini response")
 	}
 
-	rawText := responseBody.Candidates[0].Content.Parts[0].Text
+	*result = responseBody.Candidates[0].Content.Parts[0].Text
+	return nil
+}
 
-	// Extract and parse AI JSON
-
-	return rawText, nil
+// getResponseSizeAssessment returns a human-readable assessment of response size relative to request
+func getResponseSizeAssessment(ratio float64) string {
+	switch {
+	case ratio < 0.5:
+		return "smaller"
+	case ratio < 1.5:
+		return "comparable"
+	case ratio < 5:
+		return "moderately larger"
+	default:
+		return "significantly larger"
+	}
 }

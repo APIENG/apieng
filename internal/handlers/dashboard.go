@@ -63,17 +63,16 @@ func FetchMetricsLast24Hours(db *sql.DB, userID string) ([]models.Metrics, error
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	// Connect to DB
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	// Extract user ID from context
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
-	metrics, err := FetchMetricsLast24Hours(db, strToken)
+	metrics, err := FetchMetricsLast24Hours(dbConn, strToken)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return

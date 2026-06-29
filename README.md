@@ -1,62 +1,107 @@
-# API Metrics Tracker
+# API Energy Metrics Dashboard
 
-## Overview
-
-API Metrics Tracker is a web application that allows you to measure and track various metrics of API endpoints. It provides a web interface to view the metrics and an API endpoint to fetch the metrics in JSON format.
+A web application that measures and tracks API energy consumption metrics, powered by AI-generated insights.
 
 ## Features
 
-- Measure API endpoint metrics such as request size, response size, response time, timestamp, and energy consumption.
-- View metrics in a web interface.
-- Fetch metrics via an API endpoint in JSON format.
+- **API Metrics Measurement**: Track response time, request/response size, and energy consumption for any API endpoint
+- **AI-Powered Analysis**: Gemini AI generates contextual metrics and performance insights
+- **User Authentication**: Secure signup/login with session management
+- **Dashboard**: Visual analytics of measured endpoints
+- **CSV Export**: Download metrics in CSV format
+- **API Keys**: Generate and manage API keys for programmatic access
 
-## Endpoints
+## Architecture
 
-### Web Interface
+- **Backend**: Go (Gorilla Mux router, SQLite)
+- **Frontend**: HTML/CSS/JavaScript templates
+- **AI Integration**: Gemini API for metrics analysis
+- **Auth**: Session tokens + JWT support
 
-- `/metrics` - Displays the metrics page.
-- `/measure` - Processes API endpoint form submission and measures API metrics.
+## Quick Start
 
-### API
+### Prerequisites
 
-- `/api/metrics` - Returns the metrics in JSON format.
+1. **API Key and RSA Keys**
+   - Place `app.rsa` and `app.rsa.pub` in the project root
+   - If missing, the server will fail at startup with key errors
 
-## Installation
+2. **Environment Variables**
+   - Create a `.env` file (see `.env.example`)
+   - Set `GEMINI_API_KEY` for AI features; without it, AI analysis silently returns blank responses
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/yourusername/apimetrics.git
-    cd apimetrics
-    ```
+### Installation
 
-2. Install dependencies:
-    ```sh
-    go mod tidy
-    ```
+```bash
+# Clone the repository
+git clone <repo>
+cd apieng
 
-3. Set up the database:
-    ```sh
-    # Assuming you have a PostgreSQL database
-    psql -U yourusername -d yourdatabase -f schema.sql
-    ```
+# Install dependencies
+go mod tidy
 
-4. Run the application:
-    ```sh
-    go run main.go
-    ```
+# Create RSA keys (if missing)
+openssl genrsa -out app.rsa 2048
+openssl rsa -in app.rsa -pubout -out app.rsa.pub
 
-5. Open your browser and navigate to `http://localhost:8080/metrics`.
+# Create .env with your API key
+echo "GEMINI_API_KEY=<your-key-here>" > .env
+```
 
-## Usage
+### Running the Server
 
-1. Open the `/metrics` page to view the metrics.
-2. Use the `/measure` endpoint to submit an API endpoint for measurement.
-3. Use the `/api/metrics` endpoint to fetch the metrics in JSON format.
+```bash
+# From cmd/ directory
+go run server.go
+
+# Server starts at http://localhost:8080
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /login` – User login (form-based)
+- `GET /logout` – User logout
+- `POST /users` – User signup (form-based)
+- `POST /generate` – Generate API key (requires session)
+
+### Metrics (Authenticated)
+- `GET /metrics` – View all user metrics (web UI)
+- `GET /metrics/{id}` – View single metric details
+- `POST /measure` – Measure an API endpoint (form-based, requires session)
+- `GET /metrics/export/download` – Export all metrics as CSV
+- `GET /metrics/export/download/{id}` – Export single metric as CSV
+
+### API (API Key Auth)
+- `GET /api/metrics` – Return user metrics as JSON
+- `POST /api/measure` – Measure endpoint and return result as JSON
+
+### Dashboard
+- `GET /dashboard` – Analytics dashboard (requires session)
+
+## Security Notes
+
+⚠️ **Known Limitations:**
+- Session tokens are not validated against a store — any non-empty session_token cookie is accepted
+- The energy consumption model is hardcoded (not real measurement)
+- Cookies lack Secure flag for HTTPS-only transmission
+
+## Database
+
+SQLite database (`metrics.db`) with tables:
+- `users` – User accounts
+- `metrics` – API endpoint measurements
+
+## Development
+
+To run tests (after proper test structure is added):
+```bash
+go test ./...
+```
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the MIT License.
+Contributions welcome. Please ensure:
+- All endpoints are properly authenticated
+- RSA keys are in place before running
+- `.env` is set up with required API keys
