@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endpoints · APIENG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+        }
+        * { font-family: 'Instrument Sans', sans-serif; }
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(133, 169, 71, 0.1);
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(18, 53, 36, 0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 h-full flex flex-col shadow-lg" style="background-color: #123524; color: #E9EED9;">
+            <div class="p-6"><h1 class="text-2xl font-bold tracking-wider">API Metrics</h1></div>
+            <nav class="flex-1 px-4 py-2">
+                <div class="mb-6">
+                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Main</p>
+                    <div class="space-y-1">
+                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            Dashboard
+                        </a>
+                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            Metrics
+                        </a>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">API Management</p>
+                    <div class="space-y-1">
+                        <a href="/endpoints" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Endpoints
+                        </a>
+                        <a href="/keys" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                            API Keys
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
+                <a href="/settings" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Settings
+                </a>
+                <a href="/logout" class="flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">Endpoints</h2>
+                    <a href="/metrics" class="px-4 py-2 rounded-lg text-sm font-medium text-white" style="background-color: var(--medium-green)">+ Measure New Endpoint</a>
+                </div>
+            </header>
+
+            <div class="p-6 space-y-6">
+                <p class="text-sm" style="color: var(--medium-green)">
+                    Every distinct API endpoint you have measured, aggregated across all runs.
+                    Use this to spot the least efficient endpoints at a glance.
+                </p>
+
+                <div class="dashboard-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr style="background-color: var(--sage)">
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Endpoint</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Measurements</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Avg Response</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Avg Energy</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Last Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Last Seen</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y" style="border-color: var(--sage)">
+                                {{range .Endpoints}}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-sm font-medium break-all" style="color: var(--forest-green)">{{.Endpoint}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{.Count}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{printf "%.0f" .AvgResponseMs}} ms</td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                                            {{if lt .AvgEnergy 10.0}}bg-green-100 text-green-800
+                                            {{else if lt .AvgEnergy 30.0}}bg-yellow-100 text-yellow-800
+                                            {{else}}bg-red-100 text-red-800{{end}}">
+                                            {{printf "%.2f" .AvgEnergy}} J
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{.LastStatus}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{.LastSeen.Format "Jan 02, 15:04"}}</td>
+                                </tr>
+                                {{else}}
+                                <tr><td colspan="6" class="px-6 py-10 text-center text-sm" style="color: var(--medium-green)">No endpoints measured yet. <a href="/metrics" class="underline">Measure your first endpoint.</a></td></tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
