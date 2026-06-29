@@ -1,3 +1,7 @@
+//go:build ignore
+
+// Legacy pre-refactor entry point (PostgreSQL-based). The real entry point is
+// cmd/server.go. Excluded from the build to avoid a duplicate main declaration.
 package main
 
 import (

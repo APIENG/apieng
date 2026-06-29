@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endpoints · APIENG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+        }
+        * { font-family: 'Instrument Sans', sans-serif; }
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(133, 169, 71, 0.1);
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(18, 53, 36, 0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        {{template "sidebar" .}}
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto pt-14 lg:pt-0">
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">Endpoints</h2>
+                    <a href="/metrics" class="px-4 py-2 rounded-lg text-sm font-medium text-white" style="background-color: var(--medium-green)">+ Measure New Endpoint</a>
+                </div>
+            </header>
+
+            <div class="p-6 space-y-6">
+                <p class="text-sm" style="color: var(--medium-green)">
+                    Every distinct API endpoint you have measured, aggregated across all runs.
+                    Use this to spot the least efficient endpoints at a glance.
+                </p>
+
+                <div class="dashboard-card rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr style="background-color: var(--sage)">
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Endpoint</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Measurements</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Avg Response</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Avg Energy</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Last Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium" style="color: var(--forest-green)">Last Seen</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y" style="border-color: var(--sage)">
+                                {{range .Endpoints}}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-sm font-medium break-all" style="color: var(--forest-green)">{{.Endpoint}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{.Count}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{printf "%.0f" .AvgResponseMs}} ms</td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                                            {{if lt .AvgEnergy 10.0}}bg-green-100 text-green-800
+                                            {{else if lt .AvgEnergy 30.0}}bg-yellow-100 text-yellow-800
+                                            {{else}}bg-red-100 text-red-800{{end}}">
+                                            {{printf "%.2f" .AvgEnergy}} J
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{.LastStatus}}</td>
+                                    <td class="px-6 py-4 text-sm" style="color: var(--medium-green)">{{.LastSeen.Format "Jan 02, 15:04"}}</td>
+                                </tr>
+                                {{else}}
+                                <tr><td colspan="6" class="px-6 py-10 text-center text-sm" style="color: var(--medium-green)">No endpoints measured yet. <a href="/metrics" class="underline">Measure your first endpoint.</a></td></tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

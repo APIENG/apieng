@@ -1,3 +1,7 @@
+//go:build ignore
+
+// Standalone scratch script for testing the Gemini API. Run directly with
+// `go run api_testing.go`. Excluded from the normal build.
 package main
 
 import (

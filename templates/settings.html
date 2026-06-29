@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings · APIENG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+        }
+        * { font-family: 'Instrument Sans', sans-serif; }
+        .dashboard-card { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(133, 169, 71, 0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        {{template "sidebar" .}}
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto pt-14 lg:pt-0">
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center px-6 py-4">
+                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">Settings</h2>
+                </div>
+            </header>
+
+            <div class="w-full p-6 space-y-6">
+                <!-- Profile -->
+                <div class="dashboard-card rounded-xl p-6">
+                    <h3 class="text-sm font-semibold mb-4" style="color: var(--forest-green)">Account</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium mb-1" style="color: var(--medium-green)">First Name</label>
+                            <input type="text" readonly value="{{.User.FirstName}}" class="w-full px-4 py-2.5 rounded-lg border text-sm bg-gray-50" style="border-color: var(--sage); color: var(--forest-green)">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium mb-1" style="color: var(--medium-green)">Last Name</label>
+                            <input type="text" readonly value="{{.User.LastName}}" class="w-full px-4 py-2.5 rounded-lg border text-sm bg-gray-50" style="border-color: var(--sage); color: var(--forest-green)">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-medium mb-1" style="color: var(--medium-green)">Email</label>
+                            <input type="email" readonly value="{{.User.Email}}" class="w-full px-4 py-2.5 rounded-lg border text-sm bg-gray-50" style="border-color: var(--sage); color: var(--forest-green)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API access -->
+                <div class="dashboard-card rounded-xl p-6">
+                    <h3 class="text-sm font-semibold mb-1" style="color: var(--forest-green)">API Access</h3>
+                    <p class="text-sm mb-4" style="color: var(--medium-green)">
+                        {{if .HasKey}}You have an active API key.{{else}}You have not generated an API key yet.{{end}}
+                    </p>
+                    <a href="/keys" class="inline-block px-5 py-2.5 rounded-lg text-sm font-medium text-white" style="background-color: var(--medium-green)">Manage API Keys</a>
+                </div>
+
+    </div>
+</body>
+</html>

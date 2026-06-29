@@ -12,8 +12,11 @@ import (
 )
 
 type DashboardData struct {
-	Metrics []models.Metrics
-	Stats   struct {
+	Active      string
+	UserEmail   string
+	UserInitial string
+	Metrics     []models.Metrics
+	Stats       struct {
 		TotalRequests   int
 		AvgResponseTime float64
 		EnergyUsage     float64
@@ -95,12 +98,18 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
 	var avgResponse float64
 	if totalRequests > 0 {
-		avgResponse = totalResponseTime / float64(totalRequests)
+		// Convert average seconds to milliseconds for display.
+		avgResponse = (totalResponseTime / float64(totalRequests)) * 1000.0
 	}
+
+	email, initial := userChip(db, strToken)
 
 	// Prepare data
 	data := DashboardData{
-		Metrics: metrics,
+		Active:      "dashboard",
+		UserEmail:   email,
+		UserInitial: initial,
+		Metrics:     metrics,
 	}
 	data.Stats.TotalRequests = totalRequests
 	data.Stats.AvgResponseTime = avgResponse
@@ -108,7 +117,7 @@ func DashboardHandler(w http.ResponseWriter, r *http.Request) {
 	data.Stats.ActiveEndpoints = totalEndpoints
 
 	// Render template
-	tmpl := template.Must(template.ParseFiles("templates/dashboard.html"))
+	tmpl := template.Must(template.ParseFiles("templates/dashboard.html", "templates/partials/sidebar.html"))
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

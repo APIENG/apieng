@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys · APIENG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --forest-green: #123524;
+            --medium-green: #3E7B27;
+            --light-green: #85A947;
+            --cream: #EFE3C2;
+            --sage: #E9EED9;
+        }
+        * { font-family: 'Instrument Sans', sans-serif; }
+        .dashboard-card { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(133, 169, 71, 0.1); }
+        .code-block { background: #0f291c; color: #e9eed9; border-radius: 0.5rem; padding: 1rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; overflow-x: auto; }
+        .modal-backdrop { background: rgba(18, 53, 36, 0.55); backdrop-filter: blur(8px); }
+        .key-pill { letter-spacing: 0.02em; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        {{template "sidebar" .}}
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto pt-14 lg:pt-0">
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center px-6 py-4">
+                    <h2 class="text-xl font-semibold" style="color: var(--forest-green)">API Keys</h2>
+                </div>
+            </header>
+
+            <div class="w-full p-6 space-y-6">
+                <!-- Current key -->
+                <div class="dashboard-card rounded-xl p-6">
+                    <h3 class="text-sm font-semibold mb-1" style="color: var(--forest-green)">Your API Key</h3>
+                    <p class="text-sm mb-4" style="color: var(--medium-green)">Use this token in the <code>Authorization</code> header to call the APIENG REST API.</p>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div id="apiKeySummary" class="flex-1 px-4 py-3 rounded-lg border text-sm bg-gray-50 key-pill break-all" style="border-color: var(--sage); color: var(--forest-green)">
+                            {{if .HasKey}}Key available. Open the modal to view or copy it.{{else}}No key generated yet{{end}}
+                        </div>
+                        <button onclick="openKeyModal()" class="px-4 py-3 rounded-lg text-sm font-medium border" style="border-color: var(--sage); color: var(--medium-green)">View key</button>
+                    </div>
+                    <p class="mt-2 text-xs text-amber-700">Keys expire after 1 hour. Generate a new one when it stops working.</p>
+
+                    <button onclick="generateKey(this)" class="mt-4 px-5 py-2.5 rounded-lg text-sm font-medium text-white" style="background-color: var(--medium-green)">
+                        {{if .HasKey}}Regenerate Key{{else}}Generate Key{{end}}
+                    </button>
+                    <span id="genStatus" class="ml-3 text-sm"></span>
+                </div>
+
+                <!-- Usage examples -->
+                <div class="dashboard-card rounded-xl p-6">
+                    <h3 class="text-sm font-semibold mb-3" style="color: var(--forest-green)">Using your key</h3>
+                    <p class="text-sm mb-2" style="color: var(--medium-green)">Measure an endpoint:</p>
+                    <div class="code-block mb-4">curl -X POST http://localhost:8080/api/measure \
+  -H "Authorization: &lt;YOUR_API_KEY&gt;" \
+  -H "Content-Type: application/json" \
+  -d '{"apiEndpoint": "https://api.example.com/health"}'</div>
+                    <p class="text-sm mb-2" style="color: var(--medium-green)">Fetch your stored metrics:</p>
+                    <div class="code-block">curl http://localhost:8080/api/metrics \
+  -H "Authorization: &lt;YOUR_API_KEY&gt;"</div>
+                    <p class="mt-4 text-sm"><a href="/docs" class="underline" style="color: var(--medium-green)">Read the full API documentation →</a></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="keyModal" class="fixed inset-0 z-50 hidden modal-backdrop items-center justify-center px-4">
+        <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl border" style="border-color: var(--sage)">
+            <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color: var(--sage)">
+                <div>
+                    <h3 class="text-lg font-semibold" style="color: var(--forest-green)">API Key</h3>
+                    <p class="text-sm" style="color: var(--medium-green)">Copy it now. The visible value will be masked after copying.</p>
+                </div>
+                <button type="button" onclick="closeKeyModal()" class="text-2xl leading-none" style="color: var(--medium-green)">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center gap-3 rounded-xl border bg-gray-50 px-4 py-3" style="border-color: var(--sage)">
+                    <code id="modalKeyValue" class="flex-1 break-all text-sm" style="color: var(--forest-green)">{{if .HasKey}}{{.APIKey}}{{else}}No key generated yet{{end}}</code>
+                    <button type="button" onclick="copyKeyFromModal()" class="inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium" style="border-color: var(--sage); color: var(--medium-green)">
+                        <span class="sr-only">Copy key</span>
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between gap-3">
+                    <p id="modalStatus" class="text-sm" style="color: var(--medium-green)">{{if .HasKey}}This is the active key for your account.{{else}}Generate a key to reveal it here.{{end}}</p>
+                    <button type="button" onclick="closeKeyModal()" class="rounded-lg px-4 py-2 text-sm font-medium border" style="border-color: var(--sage); color: var(--forest-green)">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentApiKey = {{if .HasKey}}"{{.APIKey}}"{{else}}""{{end}};
+        let keyIsMasked = false;
+
+        function maskKey(key) {
+            if (!key || key.length <= 12) {
+                return key;
+            }
+            return `${key.slice(0, 8)}••••••••${key.slice(-6)}`;
+        }
+
+        function renderKeyValue() {
+            const modalKeyValue = document.getElementById('modalKeyValue');
+            const apiKeySummary = document.getElementById('apiKeySummary');
+            if (!modalKeyValue || !apiKeySummary) return;
+
+            if (!currentApiKey) {
+                modalKeyValue.textContent = 'No key generated yet';
+                apiKeySummary.textContent = 'No key generated yet';
+                return;
+            }
+
+            const visibleValue = keyIsMasked ? maskKey(currentApiKey) : currentApiKey;
+            modalKeyValue.textContent = visibleValue;
+            apiKeySummary.textContent = keyIsMasked ? `Key copied. Current view is masked: ${visibleValue}` : 'Key available. Open the modal to view or copy it.';
+        }
+
+        function openKeyModal() {
+            const modal = document.getElementById('keyModal');
+            if (!modal) return;
+            renderKeyValue();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeKeyModal() {
+            const modal = document.getElementById('keyModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function copyCurrentKey() {
+            if (!currentApiKey) {
+                return false;
+            }
+            await navigator.clipboard.writeText(currentApiKey);
+            keyIsMasked = true;
+            renderKeyValue();
+            const status = document.getElementById('modalStatus');
+            if (status) {
+                status.textContent = 'Copied. The key is now masked, but the copy action still uses the full token.';
+                status.style.color = '#3E7B27';
+            }
+            return true;
+        }
+
+        function copyKey() {
+            copyCurrentKey().then((copied) => {
+                if (!copied) {
+                    const status = document.getElementById('genStatus');
+                    status.textContent = 'No key to copy';
+                    status.style.color = '#b91c1c';
+                    setTimeout(() => status.textContent = '', 1500);
+                    return;
+                }
+                const status = document.getElementById('genStatus');
+                status.textContent = 'Copied to clipboard';
+                status.style.color = '#3E7B27';
+                setTimeout(() => status.textContent = '', 1500);
+            });
+        }
+
+        function copyKeyFromModal() {
+            copyCurrentKey();
+        }
+
+        async function generateKey(btn) {
+            const status = document.getElementById('genStatus');
+            btn.disabled = true;
+            status.textContent = 'Generating…';
+            status.style.color = '#85A947';
+            try {
+                const res = await fetch('/generate', { method: 'POST' });
+                if (!res.ok) throw new Error('Request failed');
+                const token = await res.json();
+                currentApiKey = token;
+                keyIsMasked = false;
+                renderKeyValue();
+                openKeyModal();
+                status.textContent = 'New key generated';
+                status.style.color = '#3E7B27';
+                btn.textContent = 'Regenerate Key';
+            } catch (e) {
+                status.textContent = 'Failed to generate key';
+                status.style.color = '#b91c1c';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        renderKeyValue();
+    </script>
+</body>
+</html>
