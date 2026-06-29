@@ -5,8 +5,11 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
@@ -20,7 +23,13 @@ import (
 
 // MetricsTemplateData represents the data to be passed to the HTML template.
 type MetricsTemplateData struct {
-	Metrics []models.Metrics
+	Metrics      []models.Metrics
+	CurrentPage  int
+	TotalPages   int
+	HasPrevious  bool
+	HasNext      bool
+	PreviousPage int
+	NextPage     int
 }
 
 type RequestBody struct {
@@ -96,19 +105,43 @@ func FetchMetricsByID(db *sql.DB, userId, metricId string) (*models.Metrics, err
 
 // Handler to display the metrics page
 func MetricsHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
-	metrics, err := FetchMetrics(db, strToken)
+	allMetrics, err := FetchMetrics(dbConn, strToken)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return
+	}
+
+	// Pagination: 10 items per page
+	pageSize := 10
+	page := 1
+	if p := r.URL.Query().Get("page"); p != "" {
+		if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
+			page = parsed
+		}
+	}
+
+	totalPages := (len(allMetrics) + pageSize - 1) / pageSize
+	if page > totalPages && totalPages > 0 {
+		page = totalPages
+	}
+
+	start := (page - 1) * pageSize
+	end := start + pageSize
+	if end > len(allMetrics) {
+		end = len(allMetrics)
+	}
+
+	var pageMetrics []models.Metrics
+	if start < len(allMetrics) {
+		pageMetrics = allMetrics[start:end]
 	}
 
 	tmpl, err := template.ParseFiles("templates/metrics.html")
@@ -117,7 +150,17 @@ func MetricsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, MetricsTemplateData{Metrics: metrics})
+	templateData := MetricsTemplateData{
+		Metrics:      pageMetrics,
+		CurrentPage:  page,
+		TotalPages:   totalPages,
+		HasPrevious:  page > 1,
+		HasNext:      page < totalPages,
+		PreviousPage: page - 1,
+		NextPage:     page + 1,
+	}
+
+	err = tmpl.Execute(w, templateData)
 	if err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
@@ -125,12 +168,11 @@ func MetricsHandler(w http.ResponseWriter, r *http.Request) {
 
 //Handler to Handle the metrics page with a specific ID
 func EachMetricsHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -139,7 +181,7 @@ func EachMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	strToken, _ := token.(string)
 
 	// Pass the ID to your fetch logic if needed
-	metrics, err := FetchMetricsByID(db, strToken, id)
+	metrics, err := FetchMetricsByID(dbConn, strToken, id)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return
@@ -150,10 +192,6 @@ func EachMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/each_metric.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		// Add this:
-		fmt.Printf("Template parsing error: %v\n", err)
-		return
 		return
 	}
 
@@ -165,17 +203,16 @@ func EachMetricsHandler(w http.ResponseWriter, r *http.Request) {
 
 // Handler to process csv endpoint
 func ExportMetricsCSVHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
 
-	metrics, err := FetchMetrics(db, strToken)
+	metrics, err := FetchMetrics(dbConn, strToken)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return
@@ -213,12 +250,11 @@ func ExportMetricsCSVHandler(w http.ResponseWriter, r *http.Request) {
 
 // Handler to process csv endpoint for a particular Endpoint
 func EachExportMetricsCSVHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -226,7 +262,7 @@ func EachExportMetricsCSVHandler(w http.ResponseWriter, r *http.Request) {
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
 
-	metric, err := FetchMetricsByID(db, strToken, id)
+	metric, err := FetchMetricsByID(dbConn, strToken, id)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return
@@ -272,28 +308,53 @@ func MeasureHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate URL format
+	if !isValidURL(apiEndpoint) {
+		http.Error(w, "Invalid API endpoint URL format", http.StatusBadRequest)
+		return
+	}
+
 	// Measure the API and store the metrics
 	dr, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer dr.Close()
 
-	// token := context.Get(r, "user")
-	// strToken, _ := token.(string)
-	cookie, _ := r.Cookie("user_id")
+	cookie, err := r.Cookie("user_id")
+	if err != nil || cookie == nil {
+		http.Error(w, "User session not found", http.StatusUnauthorized)
+		return
+	}
 
-	//log.Printf("cookie value iss %s", cookie.Value)
 	metrics := services.MeasureAPIWithAI(apiEndpoint, cookie.Value)
-	// metrics := services.MeasureAPI(apiEndpoint, cookie.Value)
 	err = db.StoreMetrics(dr, metrics)
 	if err != nil {
 		http.Error(w, "Error storing metrics", http.StatusInternalServerError)
 		return
 	}
 
-	// Redirect back to the metrics page
+	// Return JSON for AJAX requests, redirect for regular form submissions
+	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
+		w.Header().Set("Content-Type", "application/json")
+		// Escape HTML in explanation to prevent XSS
+		metrics.Explanation = escapeHTML(metrics.Explanation)
+		response := map[string]interface{}{
+			"APIEndpoint":       metrics.APIEndpoint,
+			"UserId":            metrics.UserId,
+			"Method":            metrics.Method,
+			"Status":            metrics.Status,
+			"RequestSize":       metrics.RequestSize,
+			"ResponseSize":      metrics.ResponseSize,
+			"ResponseTime":      metrics.ResponseTime.Milliseconds(),
+			"Timestamp":         metrics.Timestamp,
+			"EnergyConsumption": metrics.EnergyConsumption,
+			"Explanation":       metrics.Explanation,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 	http.Redirect(w, r, "/metrics", http.StatusSeeOther)
 }
 
@@ -326,7 +387,6 @@ func ApiMeasureHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer dr.Close()
 
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
@@ -349,16 +409,15 @@ func ApiMeasureHandler(w http.ResponseWriter, r *http.Request) {
 
 // API handler to return metrics in JSON format
 func APIMetricsHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
 	token := context.Get(r, "user")
 	strToken, _ := token.(string)
-	metrics, err := FetchMetrics(db, strToken)
+	metrics, err := FetchMetrics(dbConn, strToken)
 	if err != nil {
 		http.Error(w, "Unable to fetch metrics", http.StatusInternalServerError)
 		return
@@ -369,4 +428,23 @@ func APIMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
 	}
+}
+
+// isValidURL validates that the string is a properly formatted URL
+func isValidURL(endpoint string) bool {
+	if endpoint == "" {
+		return false
+	}
+	// Must start with http:// or https://
+	if !strings.HasPrefix(endpoint, "http://") && !strings.HasPrefix(endpoint, "https://") {
+		return false
+	}
+	// Parse as URL to validate structure
+	_, err := url.Parse(endpoint)
+	return err == nil
+}
+
+// escapeHTML safely escapes HTML to prevent XSS
+func escapeHTML(s string) string {
+	return html.EscapeString(s)
 }

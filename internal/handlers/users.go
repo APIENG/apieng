@@ -70,14 +70,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // Handler to display the users Information page
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
+	defer dbConn.Close()
 
-	users, err := FetchUsers(db)
+	users, err := FetchUsers(dbConn)
 	if err != nil {
 		log.Println("error:", err)
 		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
@@ -130,7 +130,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer dr.Close()
 
 	err = db.StoreUsers(dr, user)
 	if err != nil {
@@ -156,14 +155,13 @@ func LoginusersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "email and password is required to Login", http.StatusBadRequest)
 		return
 	}
-	db, err := db.InitializeDB()
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
-	users, err := FetchUsers(db)
+	users, err := FetchUsers(dbConn)
 	if err != nil {
 		log.Println("error:", err)
 		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
@@ -187,51 +185,87 @@ func LoginusersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := services.GenerateSessionID()
+	expiresAt := time.Now().Add(24 * time.Hour)
+
+	// Store the session in the database
+	err = db.StoreSession(dbConn, foundUser.Iid, sessionID, expiresAt)
+	if err != nil {
+		log.Println("error storing session:", err)
+		http.Error(w, "Error creating session", http.StatusInternalServerError)
+		return
+	}
 
 	// Set the cookie with the session ID
+	isSecure := r.URL.Scheme == "https" || r.Header.Get("X-Forwarded-Proto") == "https"
 	cookie := http.Cookie{
 		Name:     "session_token",
 		Value:    sessionID,
 		Path:     "/",
 		HttpOnly: true,
-		Expires:  time.Now().Add(24 * time.Hour),
+		Secure:   isSecure,
+		Expires:  expiresAt,
 	}
 	cookie1 := http.Cookie{
 		Name:     "user_id",
 		Value:    foundUser.Iid,
 		Path:     "/",
 		HttpOnly: true,
-		Expires:  time.Now().Add(24 * time.Hour),
+		Secure:   isSecure,
+		Expires:  expiresAt,
 	}
 	http.SetCookie(w, &cookie)
 	http.SetCookie(w, &cookie1)
 	http.Redirect(w, r, "/metrics", http.StatusSeeOther)
 }
 
-// API handler to return users in JSON format
+// API handler to return current user info (safe data only)
 func APIusersHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := db.InitializeDB()
+	cookie, err := r.Cookie("user_id")
+	if err != nil || cookie.Value == "" {
+		http.Error(w, "Unauthorized: No session", http.StatusUnauthorized)
+		return
+	}
+
+	dbConn, err := db.InitializeDB()
 	if err != nil {
 		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
 		return
 	}
-	defer db.Close()
 
-	users, err := FetchUsers(db)
+	users, err := FetchUsers(dbConn)
 	if err != nil {
 		http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(users)
-	if err != nil {
-		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+	// Find and return only current user's safe data
+	for _, user := range users {
+		if user.Iid == cookie.Value {
+			safeUser := map[string]string{
+				"id":       user.Iid,
+				"email":    user.Email,
+				"firstName": user.FirstName,
+				"lastName": user.LastName,
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(safeUser)
+			return
+		}
 	}
+
+	http.Error(w, "User not found", http.StatusNotFound)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := http.Cookie{
+	cookie, err := r.Cookie("session_token")
+	if err == nil && cookie.Value != "" {
+		dbConn, err := db.InitializeDB()
+		if err == nil {
+			db.InvalidateSession(dbConn, cookie.Value)
+		}
+	}
+
+	cookie = &http.Cookie{
 		Name:     "session_token",
 		Value:    "",
 		Path:     "/",
@@ -239,7 +273,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		Expires:  time.Unix(0, 0),
 		MaxAge:   -1,
 	}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

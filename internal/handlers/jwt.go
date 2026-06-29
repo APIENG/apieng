@@ -184,16 +184,15 @@ func AuthorizeAPI(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		defer dr.Close()
-		tokenString := r.Header.Get("Authorization") // Assume token is sent in the Authorization header
-		log.Printf("%s", tokenString)
 
+		tokenString := r.Header.Get("Authorization")
 		if tokenString == "" {
 			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
 			return
 		}
 
+		// First, try to parse as JWT
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Validate the token method and return the key
 			if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
@@ -201,45 +200,29 @@ func AuthorizeAPI(next http.HandlerFunc) http.HandlerFunc {
 		})
 
 		if err != nil {
-			if vErr, ok := err.(*jwt.ValidationError); ok {
-				switch vErr.Errors {
-				case jwt.ValidationErrorExpired:
-					w.WriteHeader(http.StatusUnauthorized)
-					fmt.Fprintln(w, "Token Expired, get a new one.")
-				case jwt.ValidationErrorSignatureInvalid:
-					w.WriteHeader(http.StatusUnauthorized)
-					fmt.Fprintln(w, "Invalid token signature.")
-				case jwt.ValidationErrorMalformed:
-					w.WriteHeader(http.StatusUnauthorized)
-					fmt.Fprintln(w, "Malformed token.")
-				case jwt.ValidationErrorUnverifiable:
-					w.WriteHeader(http.StatusUnauthorized)
-					fmt.Fprintln(w, "Token could not be verified.")
-				default:
-					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprintln(w, "Unknown token validation error.")
-				}
-				log.Printf("ValidationError error: %+v\n", vErr.Errors)
+			// JWT parsing failed, try to validate as a simple API key from database
+			user, err := FetchEachUserByToken(dr, tokenString)
+			if err != nil {
+				http.Error(w, "Invalid API key or token", http.StatusUnauthorized)
+				log.Printf("API auth failed for token: %s\n", tokenString)
 				return
 			}
-			// General error handling for non-ValidationError cases
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintln(w, "Error while Parsing Token!")
-			log.Printf("Token parse error: %v\n", err)
+			// Valid API key found
+			context.Set(r, "user", user.Iid)
+			next(w, r)
 			return
 		}
 
 		if token.Valid {
 			user, err := FetchEachUserByToken(dr, tokenString)
 			if err != nil {
-				http.Error(w, "Unable to fetch users", http.StatusInternalServerError)
+				http.Error(w, "Unable to fetch user", http.StatusInternalServerError)
 				return
 			}
 			context.Set(r, "user", user.Iid)
 			next(w, r)
 		} else {
-			response := Response{"Invalid token"}
-			jsonResponse(response, w)
+			http.Error(w, "Invalid token", http.StatusUnauthorized)
 		}
 	}
 }

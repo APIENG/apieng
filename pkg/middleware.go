@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/APIENG/apieng/internal/db"
 	"github.com/gorilla/context"
 )
 
@@ -26,14 +27,26 @@ func AuthorizeCookie(next http.HandlerFunc) http.HandlerFunc {
 		if err != nil || cookie.Value == "" {
 			if err == http.ErrNoCookie {
 				http.Redirect(w, r, "/", http.StatusSeeOther)
-				//http.Error(w, "Unauthorized: No session token", http.StatusUnauthorized)
 				return
 			}
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		cookie2, err := r.Cookie("user_id")
-		context.Set(r, "user", cookie2.Value)
+
+		// Validate session token against database
+		dr, err := db.InitializeDB()
+		if err != nil {
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			return
+		}
+
+		userID, err := db.ValidateSession(dr, cookie.Value)
+		if err != nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		context.Set(r, "user", userID)
 		next(w, r)
 	}
 }
