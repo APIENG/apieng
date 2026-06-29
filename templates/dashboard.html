@@ -38,73 +38,10 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 h-full flex flex-col shadow-lg" style="background-color: #123524; color: #E9EED9;">
-            <!-- Logo Section -->
-            <div class="p-6">
-                <h1 class="text-2xl font-bold tracking-wider">API Metrics</h1>
-            </div>
-
-            <!-- Main Navigation -->
-            <nav class="flex-1 px-4 py-2">
-                <div class="mb-6">
-                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Main</p>
-                    <div class="space-y-1">
-                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                            Dashboard
-                        </a>
-                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
-                            Metrics
-                        </a>
-                    </div>
-                </div>
-
-                <!-- API Management -->
-                <div class="mb-6">
-                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">API Management</p>
-                    <div class="space-y-1">
-                        <a href="/endpoints" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            Endpoints
-                        </a>
-                        <a href="/keys" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                            </svg>
-                            API Keys
-                        </a>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Bottom Section -->
-            <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
-                <a href="/settings" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Settings
-                </a>
-                <a href="/logout" class="flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    Logout
-                </a>
-            </div>
-        </aside>
+        {{template "sidebar" .}}
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-auto">
+        <main class="flex-1 overflow-auto pt-14 lg:pt-0">
             <!-- Top Navigation -->
             <header class="bg-white shadow-sm">
                 <div class="flex items-center justify-between px-6 py-4">
@@ -123,13 +60,13 @@
                     </div>
                     <div class="dashboard-card p-6 rounded-xl">
                         <h3 class="text-sm font-medium" style="color: var(--medium-green)">Avg Response Time</h3>
-                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">{{.Stats.AvgResponseTime}}ms</p>
+                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">{{printf "%.0f" .Stats.AvgResponseTime}} ms</p>
                         <div class="mt-2 text-sm" style="color: var(--light-green)">Across all endpoints</div>
                     </div>
                     <div class="dashboard-card p-6 rounded-xl">
                         <h3 class="text-sm font-medium" style="color: var(--medium-green)">Energy Usage</h3>
-                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">{{.Stats.EnergyUsage}} kWh</p>
-                        <div class="mt-2 text-sm" style="color: var(--light-green)">Total consumption</div>
+                        <p class="text-2xl font-semibold mt-2" style="color: var(--forest-green)">{{printf "%.2f" .Stats.EnergyUsage}} J</p>
+                        <div class="mt-2 text-sm" style="color: var(--light-green)">Estimated total (Joules)</div>
                     </div>
                     <div class="dashboard-card p-6 rounded-xl">
                         <h3 class="text-sm font-medium" style="color: var(--medium-green)">Active Endpoints</h3>
@@ -141,7 +78,7 @@
                 <!-- Charts Section -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="dashboard-card p-6 rounded-xl">
-                        <h3 class="text-sm font-medium mb-4" style="color: var(--medium-green)">Request Volume</h3>
+                        <h3 class="text-sm font-medium mb-4" style="color: var(--medium-green)">Energy per Call (J)</h3>
                         <canvas id="requestChart" height="200"></canvas>
                     </div>
                     <div class="dashboard-card p-6 rounded-xl">
@@ -178,9 +115,11 @@
                                             {{.Status}}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm">{{.EnergyConsumption}} J</td>
-                                    <td class="px-6 py-4 text-sm">{{.Timestamp}}</td>
+                                    <td class="px-6 py-4 text-sm">{{printf "%.2f" .EnergyConsumption}} J</td>
+                                    <td class="px-6 py-4 text-sm">{{.Timestamp.Format "Jan 02, 15:04"}}</td>
                                 </tr>
+                                {{else}}
+                                <tr><td colspan="6" class="px-6 py-10 text-center text-sm" style="color: var(--medium-green)">No API calls in the last 24 hours. <a href="/metrics" class="underline">Measure an endpoint.</a></td></tr>
                                 {{end}}
                             </tbody>
                         </table>
@@ -278,19 +217,23 @@
             }
         };
 
-        // Request Volume Chart
+        // Real data injected from the server (most-recent measurements).
+        const apiLabels = [{{range .Metrics}}{{.Timestamp.Format "Jan 02 15:04"}},{{end}}];
+        const energyData = [{{range .Metrics}}{{.EnergyConsumption}},{{end}}];
+        const responseData = [{{range .Metrics}}{{.ResponseTime.Milliseconds}},{{end}}];
+
+        // Energy per Call Chart
         const requestChart = new Chart(document.getElementById('requestChart').getContext('2d'), {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                labels: apiLabels,
                 datasets: [{
-                    label: 'Requests',
-                    data: [1200, 1900, 1500, 2100, 1800, 2200, 1600],
+                    label: 'Energy (J)',
+                    data: energyData,
+                    backgroundColor: 'rgba(62, 123, 39, 0.55)',
                     borderColor: '#3E7B27',
-                    backgroundColor: 'rgba(62, 123, 39, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true
+                    borderWidth: 1,
+                    borderRadius: 4
                 }]
             },
             options: chartConfig
@@ -300,15 +243,16 @@
         const responseTimeChart = new Chart(document.getElementById('responseTimeChart').getContext('2d'), {
             type: 'line',
             data: {
-                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                labels: apiLabels,
                 datasets: [{
                     label: 'Response Time (ms)',
-                    data: [150, 180, 160, 200, 170, 190, 165],
+                    data: responseData,
                     borderColor: '#85A947',
-                    backgroundColor: 'rgba(133, 169, 71, 0.1)',
+                    backgroundColor: 'rgba(133, 169, 71, 0.15)',
                     borderWidth: 2,
                     tension: 0.4,
-                    fill: true
+                    fill: true,
+                    pointBackgroundColor: '#3E7B27'
                 }]
             },
             options: chartConfig

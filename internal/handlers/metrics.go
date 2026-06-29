@@ -20,7 +20,10 @@ import (
 
 // MetricsTemplateData represents the data to be passed to the HTML template.
 type MetricsTemplateData struct {
-	Metrics []models.Metrics
+	Metrics     []models.Metrics
+	Active      string
+	UserEmail   string
+	UserInitial string
 }
 
 type RequestBody struct {
@@ -111,13 +114,14 @@ func MetricsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/metrics.html")
+	email, initial := userChip(db, strToken)
+	tmpl, err := template.ParseFiles("templates/metrics.html", "templates/partials/sidebar.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
 
-	err = tmpl.Execute(w, MetricsTemplateData{Metrics: metrics})
+	err = tmpl.Execute(w, MetricsTemplateData{Metrics: metrics, Active: "metrics", UserEmail: email, UserInitial: initial})
 	if err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
@@ -145,19 +149,24 @@ func EachMetricsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//fmt.Printf("Fetched metrics for ID %s: %+v\n", id, metrics)
-
-	tmpl, err := template.ParseFiles("templates/each_metric.html")
+	email, initial := userChip(db, strToken)
+	tmpl, err := template.ParseFiles("templates/each_metric.html", "templates/partials/sidebar.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		// Add this:
 		fmt.Printf("Template parsing error: %v\n", err)
-		return
 		return
 	}
 
-	err = tmpl.Execute(w, metrics)
+	// Embed the metric so its fields (.APIEndpoint, .EnergyConsumption, …) are
+	// promoted to the top level, while also exposing the shared sidebar fields.
+	data := struct {
+		*models.Metrics
+		Active      string
+		UserEmail   string
+		UserInitial string
+	}{Metrics: metrics, Active: "metrics", UserEmail: email, UserInitial: initial}
+
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}

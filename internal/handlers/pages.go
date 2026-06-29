@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"database/sql"
 	"html/template"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/gorilla/context"
@@ -11,6 +13,18 @@ import (
 	"github.com/APIENG/apieng/internal/db"
 	"github.com/APIENG/apieng/internal/models"
 )
+
+// userChip returns the email and an avatar initial for the sidebar profile chip.
+func userChip(dr *sql.DB, iid string) (email, initial string) {
+	if u, err := FetchEachUser(dr, iid); err == nil {
+		email = u.Email
+	}
+	initial = "U"
+	if email != "" {
+		initial = strings.ToUpper(email[:1])
+	}
+	return email, initial
+}
 
 // EndpointStat holds aggregated metrics for a single unique endpoint.
 type EndpointStat struct {
@@ -71,12 +85,19 @@ func EndpointsHandler(w http.ResponseWriter, r *http.Request) {
 		return stats[i].LastSeen.After(stats[j].LastSeen)
 	})
 
-	tmpl, err := template.ParseFiles("templates/endpoints.html")
+	email, initial := userChip(dr, strToken)
+	tmpl, err := template.ParseFiles("templates/endpoints.html", "templates/partials/sidebar.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
-	if err := tmpl.Execute(w, struct{ Endpoints []EndpointStat }{Endpoints: stats}); err != nil {
+	data := struct {
+		Endpoints   []EndpointStat
+		Active      string
+		UserEmail   string
+		UserInitial string
+	}{Endpoints: stats, Active: "endpoints", UserEmail: email, UserInitial: initial}
+	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
 }
@@ -104,15 +125,23 @@ func KeysHandler(w http.ResponseWriter, r *http.Request) {
 		apiKey = user.Apikey.String
 	}
 
-	tmpl, err := template.ParseFiles("templates/keys.html")
+	initial := "U"
+	if user.Email != "" {
+		initial = strings.ToUpper(user.Email[:1])
+	}
+
+	tmpl, err := template.ParseFiles("templates/keys.html", "templates/partials/sidebar.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
 	data := struct {
-		APIKey string
-		HasKey bool
-	}{APIKey: apiKey, HasKey: apiKey != ""}
+		APIKey      string
+		HasKey      bool
+		Active      string
+		UserEmail   string
+		UserInitial string
+	}{APIKey: apiKey, HasKey: apiKey != "", Active: "keys", UserEmail: user.Email, UserInitial: initial}
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}
@@ -137,15 +166,23 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	hasKey := user.Apikey.Valid && user.Apikey.String != ""
 
-	tmpl, err := template.ParseFiles("templates/settings.html")
+	initial := "U"
+	if user.Email != "" {
+		initial = strings.ToUpper(user.Email[:1])
+	}
+
+	tmpl, err := template.ParseFiles("templates/settings.html", "templates/partials/sidebar.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
 	data := struct {
-		User   models.Users
-		HasKey bool
-	}{User: user, HasKey: hasKey}
+		User        models.Users
+		HasKey      bool
+		Active      string
+		UserEmail   string
+		UserInitial string
+	}{User: user, HasKey: hasKey, Active: "settings", UserEmail: user.Email, UserInitial: initial}
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, "Error rendering template", http.StatusInternalServerError)
 	}

@@ -92,6 +92,7 @@
         .table-row:hover {
             background-color: rgba(233, 238, 217, 0.3);
         }
+        .modal-backdrop { background: rgba(18, 53, 36, 0.55); backdrop-filter: blur(8px); }
         .btn-primary {
             background: linear-gradient(135deg, var(--forest-green) 0%, #1a4d2e 100%);
             color: var(--cream);
@@ -108,73 +109,10 @@
 <body class="bg-gray-50">
     <!-- Dashboard Layout -->
     <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 h-full flex flex-col shadow-lg" style="background-color: #123524; color: #E9EED9;">
-            <!-- Logo Section -->
-            <div class="p-6">
-                <h1 class="text-2xl font-bold tracking-wider">API Metrics</h1>
-            </div>
-
-            <!-- Main Navigation -->
-            <nav class="flex-1 px-4 py-2">
-                <div class="mb-6">
-                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">Main</p>
-                    <div class="space-y-1">
-                        <a href="/dashboard" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                            Dashboard
-                        </a>
-                        <a href="/metrics" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg bg-sky-600/20 text-sky-100">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                            </svg>
-                            Metrics
-                        </a>
-                    </div>
-                </div>
-
-                <!-- API Management -->
-                <div class="mb-6">
-                    <p class="px-2 mb-3 text-xs font-semibold uppercase opacity-60">API Management</p>
-                    <div class="space-y-1">
-                        <a href="/endpoints" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            Endpoints
-                        </a>
-                        <a href="/keys" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                            </svg>
-                            API Keys
-                        </a>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- Bottom Section -->
-            <div class="mt-auto border-t border-white/10 px-4 pt-4 pb-6">
-                <a href="/settings" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Settings
-                </a>
-                <a href="/logout" class="flex items-center px-4 py-3 mt-2 text-sm font-medium rounded-lg hover:bg-sky-600/10 transition-all duration-200 text-gray-300 hover:text-white">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    Logout
-                </a>
-            </div>
-        </aside>
+        {{template "sidebar" .}}
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-auto">
+        <main class="flex-1 overflow-auto pt-14 lg:pt-0">
             <!-- Top Navigation -->
             <header class="glass-effect sticky top-0 z-10">
                 <div class="flex items-center justify-between px-6 py-4">
@@ -183,7 +121,7 @@
                         <p class="text-sm text-gray-600 mt-1">Monitor and analyze your API performance</p>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button onclick="fetchData()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+                        <button id="genKeyBtn" onclick="fetchData()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
                             Generate API Key
                         </button>
                     </div>
@@ -214,16 +152,6 @@
                             </button>
                         </div>
                     </form>
-                </div>
-
-                <!-- API Key Response -->
-                <div class="space-y-3">
-                    <textarea id="response" readonly></textarea>
-                    <button id="copy" 
-                            onclick="copyToClipboard()" 
-                            class="copy-button px-4 py-2 rounded-lg text-sm font-medium">
-                        Copy API Key
-                    </button>
                 </div>
 
                 <!-- Metrics Table -->
@@ -294,50 +222,87 @@
     </div>
 
     <script>
+        // --- API Key generation + modal (mirrors the API Keys page design) ---
+        let currentApiKey = "";
+        let keyIsMasked = false;
+
+        function maskKey(key) {
+            if (!key || key.length <= 12) {
+                return key;
+            }
+            return `${key.slice(0, 8)}••••••••${key.slice(-6)}`;
+        }
+
+        function renderKeyValue() {
+            const modalKeyValue = document.getElementById('modalKeyValue');
+            if (!modalKeyValue) return;
+            if (!currentApiKey) {
+                modalKeyValue.textContent = 'No key generated yet';
+                return;
+            }
+            modalKeyValue.textContent = keyIsMasked ? maskKey(currentApiKey) : currentApiKey;
+        }
+
+        function openKeyModal() {
+            const modal = document.getElementById('keyModal');
+            if (!modal) return;
+            renderKeyValue();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeKeyModal() {
+            const modal = document.getElementById('keyModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function copyKeyFromModal() {
+            if (!currentApiKey) return;
+            await navigator.clipboard.writeText(currentApiKey);
+            keyIsMasked = true;
+            renderKeyValue();
+            const status = document.getElementById('modalStatus');
+            if (status) {
+                status.textContent = 'Copied. The key is now masked, but the copy used the full token.';
+                status.style.color = '#3E7B27';
+            }
+        }
+
         async function fetchData() {
+            const btn = document.getElementById('genKeyBtn');
+            if (btn) btn.disabled = true;
             try {
-                const apiUrl = 'http://localhost:8080/generate';
-        
-                const response = await fetch(apiUrl, {
+                const response = await fetch('/generate', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 if (!response.ok) {
                     throw new Error(`An error occurred: ${response.statusText}`);
                 }
-        
-                const data = await response.json();
-                console.log('Data:', data);
-                const responseElement = document.getElementById('response');
-                responseElement.style.display = 'block';
-                let value = JSON.stringify(data, null, 2);
-                value = value.slice(1);
-                value = value.slice(0, -1);
-                responseElement.innerHTML = value;
-                const ele = document.getElementById('copy');
-                copy.style.display = 'block';
+                const token = await response.json();
+                currentApiKey = token;
+                keyIsMasked = false;
+                const status = document.getElementById('modalStatus');
+                if (status) {
+                    status.textContent = 'New key generated. Copy it now.';
+                    status.style.color = '#3E7B27';
+                }
+                openKeyModal();
             } catch (error) {
-                console.error('Error fetching data:', error);
-                const responseElement = document.getElementById('response');
-                responseElement.textContent = 'Failed to fetch data.';
+                console.error('Error generating key:', error);
+                alert('Failed to generate API key. Please try again.');
+            } finally {
+                if (btn) btn.disabled = false;
             }
         }
 
-        function copyToClipboard() {
-            const element = document.getElementById("response");
-            const text = element.textContent || element.innerText;
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-        
-            document.body.removeChild(textarea);
-        
-            alert('Text copied to clipboard!');
-        }
+        // Close the key modal when clicking the backdrop
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('keyModal');
+            if (e.target === modal) closeKeyModal();
+        });
 
         // Update your existing form to intercept submission
 document.addEventListener('DOMContentLoaded', function() {
@@ -544,6 +509,36 @@ function downloadCSV() {
                     Add to Table
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Key Modal -->
+<div id="keyModal" class="fixed inset-0 z-50 hidden modal-backdrop items-center justify-center px-4">
+    <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl border" style="border-color: var(--sage)">
+        <div class="flex items-center justify-between px-6 py-4 border-b" style="border-color: var(--sage)">
+            <div>
+                <h3 class="text-lg font-semibold" style="color: var(--forest-green)">API Key</h3>
+                <p class="text-sm" style="color: var(--medium-green)">Copy it now. The visible value will be masked after copying.</p>
+            </div>
+            <button type="button" onclick="closeKeyModal()" class="text-2xl leading-none" style="color: var(--medium-green)">&times;</button>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex items-center gap-3 rounded-xl border bg-gray-50 px-4 py-3" style="border-color: var(--sage)">
+                <code id="modalKeyValue" class="flex-1 break-all text-sm" style="color: var(--forest-green)">No key generated yet</code>
+                <button type="button" onclick="copyKeyFromModal()" class="inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium" style="border-color: var(--sage); color: var(--medium-green)">
+                    <span class="sr-only">Copy key</span>
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 9h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+                <p id="modalStatus" class="text-sm" style="color: var(--medium-green)">Generate a key to reveal it here.</p>
+                <button type="button" onclick="closeKeyModal()" class="rounded-lg px-4 py-2 text-sm font-medium border" style="border-color: var(--sage); color: var(--forest-green)">Close</button>
+            </div>
+            <p class="text-xs" style="color: var(--medium-green)">Use this token in the <code>Authorization</code> header. <a href="/keys" class="underline">Manage keys →</a></p>
         </div>
     </div>
 </div>
